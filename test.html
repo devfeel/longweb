@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <p><input id="btn1" type="button" value="connect normal" />&nbsp&nbsp&nbsp&nbsp<input id="btn2" type="button" value="connect auth" /></p>
+    <p><textarea cols="100" rows="20" id="txt1"></textarea></p>
+	
+	<script>
+	window.onload = initBody;
+
+var ws;
+
+function initBody(){
+    var oBtn1 = document.getElementById('btn1');
+    oBtn1.onclick = OnButton1;
+    var oBtn2 = document.getElementById('btn2');
+    oBtn2.onclick = OnButton2;
+}
+
+
+function initWebSocket(isauth) {
+    
+
+    if (isauth){
+        //ws = new WebSocket('ws://192.168.8.178:8100/ws/onsocket?appid=10000&groupid=1&userid=' + newGuid());
+        ws = new WebSocket('ws://192.168.8.178:8100/ws/onauthsocket?appid=10000&groupid=1&userid=' + newGuid() + "&token=1");
+        //ws = new WebSocket('ws://wsproxy.emoney.cn/ws/onsocket?appid=10000&groupid=1&userid=' + newGuid());
+        //ws = new WebSocket('ws://172.31.23.11/ws/onsocket?appid=10000&groupid=1&userid=' + newGuid());
+        //ws = new WebSocket('ws://172.31.23.52:8100/ws/onsocket?appid=10000&groupid=1&userid=' + newGuid());
+    }
+    else{
+        //ws = new WebSocket('ws://192.168.8.178:8100/ws/onsocket?appid=10000&groupid=1&userid=' + newGuid());
+    ws = new WebSocket('ws://192.168.8.178:8100/ws/onsocket?appid=10000&groupid=1&userid=' + newGuid());
+    //ws = new WebSocket('ws://wsproxy.emoney.cn/ws/onsocket?appid=10000&groupid=1&userid=' + newGuid());
+    //ws = new WebSocket('ws://172.31.23.11/ws/onsocket?appid=10000&groupid=1&userid=' + newGuid());
+    //ws = new WebSocket('ws://172.31.23.52:8100/ws/onsocket?appid=10000&groupid=1&userid=' + newGuid());
+    }
+	
+	ws.onopen = OnOpen;
+    ws.onmessage = OnMessage;
+    ws.onclose = OnClose;
+    ws.onerror = OnError;
+}
+
+function OnButton1() {
+	//send()
+    initWebSocket(false)
+}
+
+function OnButton2() {
+    //send()
+    initWebSocket(true)
+}
+
+
+var send = function() {
+    var data = function() {
+        ws.send("{'send':1,'take':2,'message':" + Math.random() + "}");
+    };
+    if (ws.readyState !== 1) {
+        ws.close();
+        initWebSocket();
+        setTimeout(function() {
+            data();
+        }, 1000);
+    } else {
+        data();
+    };
+ 
+}
+
+function OnOpen(event) {
+    var oTxt = document.getElementById('txt1');
+    ws.send("ws open");
+    oTxt.value =oTxt.value + "\r\nConnect Success";
+    oTxt.scrollTop = oTxt.scrollHeight;
+}
+
+function OnMessage(event) {
+    var oTxt = document.getElementById('txt1');
+    oTxt.value =oTxt.value + "\r\n" + event.data;
+    oTxt.scrollTop = oTxt.scrollHeight;
+};
+
+function OnClose(event){
+    var oTxt = document.getElementById('txt1');
+    oTxt.value =oTxt.value + "\r\n" + "connect close";
+    oTxt.scrollTop = oTxt.scrollHeight;
+}
+
+
+function OnError(event){
+    var oTxt = document.getElementById('txt1');
+    for ( var p in event) {
+        oTxt.value =oTxt.value + "\r\n" + "connect error[" + p+ "] =>" + event[p];
+        oTxt.scrollTop = oTxt.scrollHeight;
+    }
+}
+
+function getNowFormatDate() {
+    var date = new Date();
+    var seperator1 = "-";
+    var seperator2 = ":";
+    var month = date.getMonth() + 1;
+    var strDate = date.getDate();
+    if (month >= 1 && month <= 9) {
+        month = "0" + month;
+    }
+    if (strDate >= 0 && strDate <= 9) {
+        strDate = "0" + strDate;
+    }
+    var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate
+            + " " + date.getHours() + seperator2 + date.getMinutes()
+            + seperator2 + date.getSeconds();
+    return currentdate;
+}
+
+
+function newGuid()
+{
+    var guid = "";
+    for (var i = 1; i <= 32; i++){
+      var n = Math.floor(Math.random()*16.0).toString(16);
+      guid +=   n;
+      if((i==8)||(i==12)||(i==16)||(i==20))
+        guid += "-";
+    }
+    return guid;   
+}
+	</script>
+	
+	
+	
+</body>
+</html>

@@ -1,0 +1,32 @@
+﻿LongWeb - Web实时通信框架版本信息
+支持websocket与长轮询
+
+V1.4.2
+1、LongPoll增加jsonp支持
+2、2017-02-08 17:00
+
+V1.4.1
+1、完善鉴权实现，统一WebSocket与LongPoll鉴权协议，重构相关代码实现，完善接入文档
+2、2017-02-07 15:00
+
+V1.4
+1、完善LongPoll实现，兼容hijack与普通模式，支持跨域
+2、新增LongPoll独立日志文件
+3、2017-02-07 10:00
+
+V1.3
+1、重写LongPoll实现，支持跨域
+2、2017-02-04 13:00
+
+V1.2
+1、WebSocket支持鉴权特性
+2、WebSocket\LongPoll增加连接日志 - HttpDebug
+3、2017-01-04 12:00
+
+V1.1
+1、支持LongPoll版本
+2、2017-01-03 17:00
+
+V1.0
+1、基础版本，实现Websocket代理
+2、2016-12-16 13:00
