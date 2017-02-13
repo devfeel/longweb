@@ -1,7 +1,7 @@
 package message
 
 import (
-	"devfeel/dotweb"
+	"github.com/devfeel/dotweb"
 
 	. "devfeel/longweb/const"
 	"devfeel/longweb/exception"

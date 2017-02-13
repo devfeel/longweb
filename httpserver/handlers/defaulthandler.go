@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"devfeel/dotweb"
 	"devfeel/longweb/const"
 	"devfeel/longweb/framework/file"
 	"devfeel/longweb/framework/json"
 	"fmt"
+	"github.com/devfeel/dotweb"
 	"html/template"
 	"runtime"
 )

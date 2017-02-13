@@ -1,34 +1,34 @@
 package httpserver
 
 import (
-	"devfeel/dotweb"
 	"devfeel/longweb/config"
 	"devfeel/longweb/framework/log"
 	"devfeel/longweb/message"
+	"github.com/devfeel/dotweb"
 	"strconv"
 )
 
 func StartServer() error {
 
 	//初始化DotServer
-	dotweb := dotweb.New()
+	dotserver := dotweb.New()
 
 	//设置dotserver日志目录
-	dotweb.SetLogPath(config.CurrentConfig.Log.FilePath)
+	dotserver.SetLogPath(config.CurrentConfig.Log.FilePath)
 
 	//设置路由
-	InitRoute(dotweb)
+	InitRoute(dotserver)
 
 	innerLogger := logger.GetInnerLogger()
 
 	//启动监控服务
 	pprofport := config.CurrentConfig.HttpServer.PProfPort
-	go dotweb.StartPProfServer(pprofport)
+	go dotserver.StartPProfServer(pprofport)
 
 	// 开始服务
 	port := config.CurrentConfig.HttpServer.HttpPort
 	innerLogger.Debug("dotweb.StartServer => " + strconv.Itoa(port))
-	err := dotweb.StartServer(port)
+	err := dotserver.StartServer(port)
 	return err
 }
 

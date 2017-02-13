@@ -1,20 +1,20 @@
 package httpserver
 
 import (
-	"devfeel/dotweb"
 	"devfeel/longweb/httpserver/handlers"
+	"github.com/devfeel/dotweb"
 )
 
-func InitRoute(dotweb *dotweb.Dotweb) {
-	dotweb.HttpServer.GET("/", handlers.Index)
-	dotweb.HttpServer.GET("/mstate", handlers.Memstate)
-	dotweb.HttpServer.GET("/testauth", handlers.TestAuth)
-	dotweb.HttpServer.GET("/testmessage", handlers.TestMessage)
+func InitRoute(dotserver *dotweb.Dotweb) {
+	dotserver.HttpServer.GET("/", handlers.Index)
+	dotserver.HttpServer.GET("/mstate", handlers.Memstate)
+	dotserver.HttpServer.GET("/testauth", handlers.TestAuth)
+	dotserver.HttpServer.GET("/testmessage", handlers.TestMessage)
 
-	dotweb.HttpServer.GET("/state", handlers.State)
-	dotweb.HttpServer.POST("/sendmessage", handlers.SendMessage)
-	dotweb.HttpServer.ServerFile("/static/*filepath", "/home/emoney/longweb/www")
-	dotweb.HttpServer.ServerFile("/js/*filepath", "/home/emoney/longweb/javascript")
-	dotweb.HttpServer.WebSocket("/ws/onsocket", handlers.OnWebSocket)
-	dotweb.HttpServer.HiJack("/poll/onpolling", handlers.OnPolling)
+	dotserver.HttpServer.GET("/state", handlers.State)
+	dotserver.HttpServer.POST("/sendmessage", handlers.SendMessage)
+	dotserver.HttpServer.ServerFile("/static/*filepath", "/home/emoney/longweb/www")
+	dotserver.HttpServer.ServerFile("/js/*filepath", "/home/emoney/longweb/javascript")
+	dotserver.HttpServer.WebSocket("/ws/onsocket", handlers.OnWebSocket)
+	dotserver.HttpServer.HiJack("/poll/onpolling", handlers.OnPolling)
 }
