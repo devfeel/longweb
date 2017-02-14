@@ -24,9 +24,9 @@ message:
 
 MessageLevel:
 
-* MessageLevel_All    = "0" //"all"
-* MessageLevel_Normal = "1" //"normal"
-* MessageLevel_Auth   = "2" //"auth"
+* MessageLevel_All    = "0"  //"all"
+* MessageLevel_Normal = "1"  //"normal"
+* MessageLevel_Auth   = "2"  //"auth"
 
 result:
 ```
@@ -44,7 +44,9 @@ RetCode说明：
 **************************************************************************************************
 
 2)websocket:
+
 api-url: ws://yourwwwurl/ws/onsocket?appid=?&groupid=?&userid=?&token=?
+
 参数：
 
 * appid：应用编号，统一申请
@@ -55,7 +57,9 @@ api-url: ws://yourwwwurl/ws/onsocket?appid=?&groupid=?&userid=?&token=?
 **************************************************************************************************
 
 3)longpoll:
+
 api-url: http://yourwwwurl/poll/onpolling?appid=?&groupid=?&userid=?&querykey=?&jsonpcallback=?&token=?
+
 参数：
 
 * jsonpcallback: 应用定义jsonp-callback函数名，如果不传入默认为callback
@@ -74,6 +78,7 @@ type ResponseJson struct {
 }
 ```
 RetCode描述：
+
 返回值：
 
 * 0 成功
@@ -82,8 +87,6 @@ RetCode描述：
 * -100003：注册失败
 * -100009：超时或其他异常，一般需重新发起请求
 * -200009：应用返回异常
-//鉴权相关返回值
-
 * -101001：no permission connect! => appid[" + appId + "] no exists
 * -101002：no permission connect! => check token has an error =>
 * -101003：no permission connect! => check token has an error =>
@@ -95,22 +98,32 @@ RetCode描述：
 **************************************************************************************************
 **************************************************************************************************
 需要业务方实现的api：
+
 1、querymessage接口
+
 需要应用实现的查询消息接口
+
 url：http://XXXXXXXX/api/querymessage?appid=?&groupid=?&userid=?&querykey=?
+
 参数：
 
 * appid：应用编号，统一申请
 * groupid：用户组编号，应用自定义
 * userid：用户编号，应用需保证userid在同Appid下的唯一性
 * querykey：透传key，会透传给应用messageapi，一般用于决定是否有需要马上返回的数据
+
 返回：
+
 为空，则表示无需马上返回的数据，请求会继续等待；
+
 不为空，请求马上返回，向客户端推送业务消息
 
 2、checktoken接口
+
 需要应用实现的鉴权api
+
 url：http://XXXXXXXX/api/checktoken?appid=?&groupid=?&userid=?&token=?
+
 参数：
 
 * appid：应用编号，统一申请
@@ -128,5 +141,7 @@ type AuthResponse struct {
 }
 ```
 其中
+
 1）RetCode为0表示check成功
+
 2）AppID、GroupID、UserID在应用创建token时保存，会用于验证websocket入参合法性
