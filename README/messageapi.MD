@@ -27,7 +27,7 @@ MessageLevel:
 
 result:
 ```
-{"RetCode":0,"RetMsg":"ok","LastLoadApisTime":"2016-12-09T10:57:10.515227303+08:00","IntervalTime":0,"ContentType":"application/json; text/plain; charset=utf-8","Message":"{\"RetCode\":0,\"RetMsg\":\"ok\"}"}
+{"RetCode":0,"RetMsg":"ok"}
 ```
 
 RetCode说明：
