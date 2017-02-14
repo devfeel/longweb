@@ -1,7 +1,5 @@
 #longweb实时通信框架接入文档：
 
-**************************************************************************************************
-
 ##sendmessage:
 api: http://yourwwwurl/sendmessage<br>
 message:<br>
@@ -38,8 +36,6 @@ RetCode说明：
 * -10001:message format error
 * -10002:this appid no have permission
 
-**************************************************************************************************
-
 ##websocket:<br>
 api-url: ws://yourwwwurl/ws/onsocket?appid=?&groupid=?&userid=?&token=?
 <br>参数：
@@ -48,8 +44,6 @@ api-url: ws://yourwwwurl/ws/onsocket?appid=?&groupid=?&userid=?&token=?
 * groupid：用户组编号，应用自定义
 * userid：用户编号，应用需保证userid在同Appid下的唯一性
 * token：非必须，鉴权token，不传该参数或传入为空，则表示当前请求无需鉴权；当传入该参数时表示连接需要鉴权，需要应用提供鉴权API，接口定义参考checktoken接口描述
-
-**************************************************************************************************
 
 ##longpoll:<br>
 api-url: http://yourwwwurl/poll/onpolling?appid=?&groupid=?&userid=?&querykey=?&jsonpcallback=?&token=?
@@ -88,8 +82,7 @@ RetCode描述：<br>
 
 **************************************************************************************************
 **************************************************************************************************
-**************************************************************************************************
-需要业务方实现的api：<br>
+#需要接入应用实现的api：<br>
 ##querymessage接口<br>
 需要应用实现的查询消息接口<br>
 url：http://XXXXXXXX/api/querymessage?appid=?&groupid=?&userid=?&querykey=?
