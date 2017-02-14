@@ -2,11 +2,9 @@ longweb实时通信框架提供的接口：
 
 **************************************************************************************************
 
-1)sendmessage:
-
-api: http://yourwwwurl/sendmessage
-
-message:
+1)sendmessage:<br>
+api: http://yourwwwurl/sendmessage<br>
+message:<br>
 ```
 {
     "AppID":"10000",
@@ -20,8 +18,7 @@ message:
 }
 ```
 
-属性说明：
-
+属性说明：<br>
 MessageLevel:
 
 * MessageLevel_All    = "0"  //"all"
@@ -43,11 +40,9 @@ RetCode说明：
 
 **************************************************************************************************
 
-2)websocket:
-
+2)websocket:<br>
 api-url: ws://yourwwwurl/ws/onsocket?appid=?&groupid=?&userid=?&token=?
-
-参数：
+<br>参数：
 
 * appid：应用编号，统一申请
 * groupid：用户组编号，应用自定义
@@ -56,11 +51,9 @@ api-url: ws://yourwwwurl/ws/onsocket?appid=?&groupid=?&userid=?&token=?
 
 **************************************************************************************************
 
-3)longpoll:
-
+3)longpoll:<br>
 api-url: http://yourwwwurl/poll/onpolling?appid=?&groupid=?&userid=?&querykey=?&jsonpcallback=?&token=?
-
-参数：
+<br>参数：
 
 * jsonpcallback: 应用定义jsonp-callback函数名，如果不传入默认为callback
 * appid：应用编号，统一申请
@@ -77,8 +70,7 @@ type ResponseJson struct {
   Message string
 }
 ```
-RetCode描述：
-
+RetCode描述：<br>
 返回值：
 
 * 0 成功
@@ -97,33 +89,24 @@ RetCode描述：
 **************************************************************************************************
 **************************************************************************************************
 **************************************************************************************************
-需要业务方实现的api：
-
-1、querymessage接口
-
-需要应用实现的查询消息接口
-
+需要业务方实现的api：<br>
+1、querymessage接口<br>
+需要应用实现的查询消息接口<br>
 url：http://XXXXXXXX/api/querymessage?appid=?&groupid=?&userid=?&querykey=?
-
-参数：
+<br>参数：
 
 * appid：应用编号，统一申请
 * groupid：用户组编号，应用自定义
 * userid：用户编号，应用需保证userid在同Appid下的唯一性
 * querykey：透传key，会透传给应用messageapi，一般用于决定是否有需要马上返回的数据
 
-返回：
-
-为空，则表示无需马上返回的数据，请求会继续等待；
-
-不为空，请求马上返回，向客户端推送业务消息
+返回：<br>
+为空，则表示无需马上返回的数据，请求会继续等待；<br>
+不为空，请求马上返回，向客户端推送业务消息<br>
 
 2、checktoken接口
-
-需要应用实现的鉴权api
-
-url：http://XXXXXXXX/api/checktoken?appid=?&groupid=?&userid=?&token=?
-
+需要应用实现的鉴权api<br>
+<br>url：http://XXXXXXXX/api/checktoken?appid=?&groupid=?&userid=?&token=?
 参数：
 
 * appid：应用编号，统一申请
@@ -140,8 +123,6 @@ type AuthResponse struct {
   UserID  string
 }
 ```
-其中
-
-1）RetCode为0表示check成功
-
+其中<br>
+1）RetCode为0表示check成功<br>
 2）AppID、GroupID、UserID在应用创建token时保存，会用于验证websocket入参合法性
