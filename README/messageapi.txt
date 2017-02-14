@@ -5,6 +5,7 @@ longweb实时通信框架提供的接口：
 1)sendmessage:
 api-url: http://yourwwwurl/sendmessage
 message:
+```
 {
     "AppID":"10000",
     "GroupID":"1",
@@ -15,6 +16,7 @@ message:
     "ToUserID":"",
     "Content":"test from fiddler"
 }
+```
 属性说明：
 MessageLevel:
 MessageLevel_All    = "0" //"all"
