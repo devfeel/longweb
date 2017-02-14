@@ -3,8 +3,8 @@ longweb实时通信框架提供的接口：
 **************************************************************************************************
 
 1)sendmessage:
-api-url: http://192.168.8.178:8900/api/webcrtproxy/1.0/message.sendmessage?gate_appid=?
-message£º
+api-url: http://yourwwwurl/sendmessage
+message:
 {
     "AppID":"10000",
     "GroupID":"1",
@@ -34,7 +34,7 @@ RetCode说明：
 **************************************************************************************************
 
 2)websocket:
-api-url: ws://192.168.8.178:8100/ws/onsocket?appid=?&groupid=?&userid=?&token=?
+api-url: ws://yourwwwurl/ws/onsocket?appid=?&groupid=?&userid=?&token=?
 参数：
 appid：应用编号，统一申请
 groupid：用户组编号，应用自定义
@@ -44,7 +44,7 @@ token：非必须，鉴权token，不传该参数或传入为空，则表示当�
 **************************************************************************************************
 
 3)longpoll:
-api-url: http://192.168.8.178:8100/poll/onpolling?appid=?&groupid=?&userid=?&querykey=?&jsonpcallback=?&token=?
+api-url: http://yourwwwurl/poll/onpolling?appid=?&groupid=?&userid=?&querykey=?&jsonpcallback=?&token=?
 参数：
 jsonpcallback: 应用定义jsonp-callback函数名，如果不传入默认为callback
 appid：应用编号，统一申请
