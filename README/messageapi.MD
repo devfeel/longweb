@@ -1,8 +1,8 @@
-longweb实时通信框架提供的接口：
+#longweb实时通信框架接入文档：
 
 **************************************************************************************************
 
-1)sendmessage:<br>
+##sendmessage:
 api: http://yourwwwurl/sendmessage<br>
 message:<br>
 ```
@@ -40,7 +40,7 @@ RetCode说明：
 
 **************************************************************************************************
 
-2)websocket:<br>
+##websocket:<br>
 api-url: ws://yourwwwurl/ws/onsocket?appid=?&groupid=?&userid=?&token=?
 <br>参数：
 
@@ -51,7 +51,7 @@ api-url: ws://yourwwwurl/ws/onsocket?appid=?&groupid=?&userid=?&token=?
 
 **************************************************************************************************
 
-3)longpoll:<br>
+##longpoll:<br>
 api-url: http://yourwwwurl/poll/onpolling?appid=?&groupid=?&userid=?&querykey=?&jsonpcallback=?&token=?
 <br>参数：
 
@@ -90,7 +90,7 @@ RetCode描述：<br>
 **************************************************************************************************
 **************************************************************************************************
 需要业务方实现的api：<br>
-1、querymessage接口<br>
+##querymessage接口<br>
 需要应用实现的查询消息接口<br>
 url：http://XXXXXXXX/api/querymessage?appid=?&groupid=?&userid=?&querykey=?
 <br>参数：
@@ -104,7 +104,7 @@ url：http://XXXXXXXX/api/querymessage?appid=?&groupid=?&userid=?&querykey=?
 为空，则表示无需马上返回的数据，请求会继续等待；<br>
 不为空，请求马上返回，向客户端推送业务消息<br>
 
-2、checktoken接口
+##checktoken接口
 需要应用实现的鉴权api<br>
 <br>url：http://XXXXXXXX/api/checktoken?appid=?&groupid=?&userid=?&token=?
 参数：
