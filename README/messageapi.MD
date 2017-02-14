@@ -117,12 +117,5 @@ type AuthResponse struct {
 }
 ```
 其中<br>
+1）RetCode为0则表示验证成功
 2）AppID、GroupID、UserID在应用创建token时保存，会用于验证websocket入参合法性
-
-RetCode说明:
-
-* -101001：no permission connect! => appid[" + appId + "] no exists
-* -101002：no permission connect! => check token has an error =>
-* -101003：no permission connect! => check token has an error =>
-* -101004：no permission connect! => check token result =>
-* -101005：no permission connect! => check token: appid|groupid|userid not match
