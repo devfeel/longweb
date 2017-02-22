@@ -104,6 +104,42 @@ func (app *AppGroups) GetTotalClientCount() int {
 	return total
 }
 
+//get app's websocke client count
+func (app *AppGroups) GetWebSocketCount() int {
+	total := 0
+	for _, g := range app.groups {
+		total += g.GetWebSocketClientCount()
+	}
+	return total
+}
+
+//get app's auth websocke client count
+func (app *AppGroups) GetAuthWebSocketCount() int {
+	total := 0
+	for _, g := range app.groups {
+		total += g.GetAuthWebSocketClientCount()
+	}
+	return total
+}
+
+//get app's longpoll client count
+func (app *AppGroups) GetLongPollCount() int {
+	total := 0
+	for _, g := range app.groups {
+		total += g.GetLongPollClientCount()
+	}
+	return total
+}
+
+//get app's auth longpoll client count
+func (app *AppGroups) GetAuthLongPollCount() int {
+	total := 0
+	for _, g := range app.groups {
+		total += g.GetAuthLongPollClientCount()
+	}
+	return total
+}
+
 //获取指定用户组
 func (ag *AppGroups) GetUserGroup(groupId string) (*UserGroup, bool) {
 	defer ag.mutex.RUnlock()

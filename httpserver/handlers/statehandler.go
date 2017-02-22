@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"devfeel/dotweb"
 	"devfeel/longweb/message"
+	"github.com/devfeel/dotweb"
 	"strconv"
 	"strings"
 )
@@ -19,10 +19,13 @@ func State(ctx *dotweb.HttpContext) {
 		if !exists {
 			body += "<br> not exists this app"
 		} else {
-			body += "<br> UserGroupCount => " + strconv.Itoa(appinfo.GetGroupCount())
-			body += "<br> UserClientCount => " + strconv.Itoa(appinfo.GetTotalClientCount())
-			body += "<br><br>[" + app + "] => UserGroupList:"
-			body += "<br>[GroupID:TotalCount] => [NW=\"NormalWebSocket\"] [AW=\"AuthWebSocket\"] [NL=\"NormalLongPoll\"] [AL=\"AuthLongPoll\"]"
+			body += "<br>AppInfo [" + app + "] [UserGroupCount:" + strconv.Itoa(appinfo.GetGroupCount()) + "]"
+			body += "<br>UserGroupList:"
+			body += "<br>[" + strconv.Itoa(appinfo.GetTotalClientCount()) + "] =>"
+			body += " [NW=" + strconv.Itoa(appinfo.GetWebSocketCount()-appinfo.GetAuthWebSocketCount()) + "]"
+			body += " [AW=" + strconv.Itoa(appinfo.GetAuthWebSocketCount()) + "]"
+			body += " [NL=" + strconv.Itoa(appinfo.GetLongPollCount()-appinfo.GetAuthLongPollCount()) + "]"
+			body += " [AL=" + strconv.Itoa(appinfo.GetAuthLongPollCount()) + "]"
 			body += "<br>"
 			for _, v := range appinfo.GetUserGroups() {
 				body += "<br>"

@@ -1,10 +1,10 @@
 package httpserver
 
 import (
-	"devfeel/longweb/config"
-	"devfeel/longweb/framework/log"
-	"devfeel/longweb/message"
 	"github.com/devfeel/dotweb"
+	"github.com/devfeel/longweb/config"
+	"github.com/devfeel/longweb/framework/log"
+	"github.com/devfeel/longweb/message"
 	"strconv"
 )
 
