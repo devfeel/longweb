@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"devfeel/longweb/config"
-	. "devfeel/longweb/message"
 	"github.com/devfeel/dotweb"
+	"github.com/devfeel/longweb/config"
+	. "github.com/devfeel/longweb/message"
 )
 
 //推送消息

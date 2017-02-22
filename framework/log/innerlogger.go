@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"fmt"
 	"os"
 	"strings"
 	"syscall"
@@ -64,6 +65,7 @@ func (logger *InnerLogger) innerWriteLog(log string, level string) {
 }
 
 func (logger *InnerLogger) innerWriteFile(logFile string, log string) {
+	fmt.Println(log)
 	var mode os.FileMode
 	flag := syscall.O_RDWR | syscall.O_APPEND | syscall.O_CREAT
 	mode = 0666

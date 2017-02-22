@@ -1,8 +1,8 @@
 package httpserver
 
 import (
-	"devfeel/longweb/httpserver/handlers"
 	"github.com/devfeel/dotweb"
+	"github.com/devfeel/longweb/httpserver/handlers"
 )
 
 func InitRoute(dotserver *dotweb.Dotweb) {

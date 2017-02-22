@@ -5,13 +5,13 @@
 package main
 
 import (
-	"devfeel/longweb/config"
-	"devfeel/longweb/framework/file"
-	"devfeel/longweb/framework/log"
-	"devfeel/longweb/httpserver"
-	"devfeel/longweb/message"
 	"flag"
 	"fmt"
+	"github.com/devfeel/longweb/config"
+	"github.com/devfeel/longweb/framework/file"
+	"github.com/devfeel/longweb/framework/log"
+	"github.com/devfeel/longweb/httpserver"
+	"github.com/devfeel/longweb/message"
 	"os"
 	"os/signal"
 	"runtime"
@@ -29,7 +29,7 @@ func init() {
 func main() {
 	defer func() {
 		if err := recover(); err != nil {
-			strLog := "datapipe.websocket:main recover error => " + fmt.Sprintln(err)
+			strLog := "longweb:main recover error => " + fmt.Sprintln(err)
 			os.Stdout.Write([]byte(strLog))
 			innerLogger.Error(strLog)
 

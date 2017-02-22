@@ -8,7 +8,7 @@ import (
 	"os"
 	"sync"
 
-	"datapipe/websocket/framework/log"
+	"github.com/devfeel/longweb/framework/log"
 )
 
 var (
@@ -34,7 +34,7 @@ func SetBaseDir(baseDir string) {
 
 //初始化配置文件
 func InitConfig(configFile string) *AppConfig {
-	innerLogger.Info("AppConfig::InitConfig 配置文件[" + configFile + "]开始...")
+	innerLogger.Debug("AppConfig::InitConfig 配置文件[" + configFile + "]开始...")
 	content, err := ioutil.ReadFile(configFile)
 	if err != nil {
 		innerLogger.Warn("AppConfig::InitConfig 配置文件[" + configFile + "]无法解析 - " + err.Error())
@@ -47,11 +47,13 @@ func InitConfig(configFile string) *AppConfig {
 		innerLogger.Warn("AppConfig::InitConfig 配置文件[" + configFile + "]解析失败 - " + err.Error())
 		os.Exit(1)
 	}
+
+	innerLogger.Debug("AppConfig::InitConfig Start Load AppInfo")
 	tmpMap := make(map[string]*AppInfo)
 	for k, v := range result.Apps {
 		tmpMap[v.AppID] = &result.Apps[k]
 		b, _ := json.Marshal(&v)
-		innerLogger.Info("AppConfig::InitConfig Load AppInfo => " + string(b))
+		innerLogger.Debug("AppConfig::InitConfig Load AppInfo => " + string(b))
 	}
 
 	//初始化App列表
@@ -60,16 +62,19 @@ func InitConfig(configFile string) *AppConfig {
 	appMap = tmpMap
 	mutex.Unlock()
 
+	innerLogger.Debug("AppConfig::InitConfig Finish Load AppInfo")
+
 	//初始化AllowIP列表
 	allowIpMutex.Lock()
 	allowIpMap = make(map[string]string)
-	innerLogger.Info("AppConfig::InitConfig => AllowIps => " + fmt.Sprint(result.AllowIps))
+	innerLogger.Debug("AppConfig::InitConfig => AllowIps => " + fmt.Sprint(result.AllowIps))
 	for _, v := range result.AllowIps {
-		innerLogger.Info("AppConfig::InitConfig => AddAllowIp -> [" + v + "]")
+		innerLogger.Debug("AppConfig::InitConfig => AddAllowIp -> [" + v + "]")
 		allowIpMap[v] = v
 	}
 	allowIpMutex.Unlock()
-	innerLogger.Info("AppConfig::InitConfig 配置文件[" + configFile + "]完成")
+
+	innerLogger.Debug("AppConfig::InitConfig 配置文件[" + configFile + "]完成")
 
 	return &CurrentConfig
 }

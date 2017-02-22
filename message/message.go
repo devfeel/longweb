@@ -1,14 +1,14 @@
 package message
 
 import (
-	"devfeel/longweb/config"
-	. "devfeel/longweb/const"
-	"devfeel/longweb/exception"
-	"devfeel/longweb/framework/log"
-	"devfeel/longweb/framework/task"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/devfeel/longweb/config"
+	. "github.com/devfeel/longweb/const"
+	"github.com/devfeel/longweb/exception"
+	"github.com/devfeel/longweb/framework/log"
+	"github.com/devfeel/longweb/framework/task"
 	"strconv"
 	"sync"
 )

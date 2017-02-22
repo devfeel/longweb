@@ -3,12 +3,12 @@ package message
 import (
 	"github.com/devfeel/dotweb"
 
-	. "devfeel/longweb/const"
-	"devfeel/longweb/exception"
-	"devfeel/longweb/framework/json"
-	"devfeel/longweb/framework/log"
 	"errors"
 	"fmt"
+	. "github.com/devfeel/longweb/const"
+	"github.com/devfeel/longweb/exception"
+	"github.com/devfeel/longweb/framework/json"
+	"github.com/devfeel/longweb/framework/log"
 	"sync"
 	"sync/atomic"
 	"time"

@@ -5,8 +5,8 @@ import (
 	"os"
 	"runtime"
 
-	. "devfeel/longweb/const"
-	"devfeel/longweb/framework/log"
+	. "github.com/devfeel/longweb/const"
+	"github.com/devfeel/longweb/framework/log"
 )
 
 //统一异常处理

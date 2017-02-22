@@ -1,12 +1,12 @@
 package handlers
 
 import (
-	"devfeel/longweb/config"
-	. "devfeel/longweb/const"
-	"devfeel/longweb/framework/log"
-	. "devfeel/longweb/message"
 	"fmt"
 	"github.com/devfeel/dotweb"
+	"github.com/devfeel/longweb/config"
+	. "github.com/devfeel/longweb/const"
+	"github.com/devfeel/longweb/framework/log"
+	. "github.com/devfeel/longweb/message"
 	"strconv"
 )
 

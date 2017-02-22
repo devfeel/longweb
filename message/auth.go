@@ -1,9 +1,9 @@
 package message
 
 import (
-	"devfeel/longweb/config"
-	"devfeel/longweb/framework/http"
-	"devfeel/longweb/framework/json"
+	"github.com/devfeel/longweb/config"
+	"github.com/devfeel/longweb/framework/http"
+	"github.com/devfeel/longweb/framework/json"
 	"strconv"
 )
 

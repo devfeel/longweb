@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"devfeel/longweb/message"
 	"github.com/devfeel/dotweb"
+	"github.com/devfeel/longweb/message"
 	"strconv"
 	"strings"
 )
@@ -13,6 +13,7 @@ func State(ctx *dotweb.HttpContext) {
 	body := " AppCount => " + strconv.Itoa(appcount)
 	body += "<br>  MaxClientIndex => " + strconv.FormatUint(message.GetMaxClientIndex(), 10)
 	body += "<br>  ClientObjectCreateCount => " + strconv.FormatUint(message.GetTotalClientCreateCount(), 10)
+	body += "<br>"
 	app := ctx.QueryString("app")
 	if app != "" {
 		appinfo, exists := message.GetAppGroups(app)

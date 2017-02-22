@@ -1,7 +1,7 @@
 package task
 
 import (
-	"devfeel/longweb/framework/log"
+	"github.com/devfeel/longweb/framework/log"
 	"sync"
 	"time"
 )

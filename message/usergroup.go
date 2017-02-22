@@ -1,10 +1,10 @@
 package message
 
 import (
-	"devfeel/longweb/config"
-	. "devfeel/longweb/const"
-	"devfeel/longweb/framework/log"
 	"fmt"
+	"github.com/devfeel/longweb/config"
+	. "github.com/devfeel/longweb/const"
+	"github.com/devfeel/longweb/framework/log"
 	"strconv"
 	"sync"
 )
