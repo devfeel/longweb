@@ -129,11 +129,12 @@ func OnPolling(ctx *dotweb.HttpContext) {
 	//get now data from app
 	targetQuery := ""
 	sourceQuery := "appid=" + appId + "&groupid=" + groupId + "&userid=" + userId + "&querykey=" + querykey
-	parseQuery, errParse := url.Parse(sourceQuery)
+	parseQuery, errParse := url.ParseQuery(sourceQuery)
 	if errParse != nil {
 		targetQuery = sourceQuery
+		logger.Warn(logTitle+"["+client.GetClientInfo()+"] UrlParse["+sourceQuery+"] error => "+errParse.Error(), LogTarget_LongPoll)
 	} else {
-		targetQuery = parseQuery.String()
+		targetQuery = parseQuery.Encode()
 	}
 	targetUrl := app.MessageApi + "?" + targetQuery
 	body, _, _, err := httputil.HttpGet(targetUrl)
