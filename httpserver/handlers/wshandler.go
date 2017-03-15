@@ -44,7 +44,12 @@ func OnWebSocket(ctx *dotweb.HttpContext) {
 			return
 		}
 	}
-	client := NewClient(appId, userId, groupId, false, ctx.WebSocket, nil)
+	isAuth := false
+	if token != "" {
+		isAuth = true
+	}
+
+	client := NewClient(appId, userId, groupId, isAuth, ctx.WebSocket, nil)
 	defer RemoveClient(client)
 
 	if client == nil {

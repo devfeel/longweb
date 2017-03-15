@@ -1,0 +1,102 @@
+<script type="text/javascript" src="http://static.emoney.cn/www/officalWebStatic/js/jquery.min.1.8.3.js"></script>
+
+<script type="text/javascript" src="js/longweb.js" ></script>
+<script>
+
+    var QueryKey = "init"; //TODO:应用初始化相关值
+    var NeedCheckToken = false;//是否需要验证token
+    var wsurl = "ws://127.0.0.1:8100/ws/onsocket";
+    var longpollurl = "http://127.0.0.1:8100/poll/onpolling";
+    var ClientId = NewGuid();            //每次创建一个Client客户端标识
+    var Appid = '10000';                //调用的应用ID
+    var Groupid = '1';                  //调用的群组ID
+    var Times2Rollback = 3;             //错误最大次数后不再重试
+
+
+
+    /*注册消息处理方法*/
+    var OnMessage = function (event) {
+        //ToDo : 应用处理消息的逻辑块
+        try { console.log(event.data); } catch (e) { }
+
+        //更新消息识别Key 防止重复循环
+        if (typeof (event.data.QueryKey) != "undefined") {
+            QueryKey = event.data.QueryKey;
+        }
+
+        //如果当前通讯方式是longpoll，重新发起请求
+        if (Longweb.ConnType == Longweb.ConnType_Longpoll){
+            Connect()
+        }
+    };
+    var OnOpen = function () {
+        //ToDo: 连接成功
+        try { console.log('Connect success!'); } catch (e) { }
+    };
+    /*注册Longweb关闭事件处理办法*/
+    var OnClose = function (event) {
+        try {
+            //TODO:关闭事件，仅对websocket有效
+            console.log('OnClose');
+            if (Longweb.ConnType() == Longweb.ConnType_Websocket) {
+                setTimeout(Connect, 2000);
+            }
+        } catch (e) { }
+    }
+    /*注册Longweb发生异常处理办法*/
+    var OnError = function (event) {
+        try {
+            //TODO:应用自定义异常处理
+            console.log('OnError' +event);
+            Longweb._FailTimes++;
+            if (Longweb._FailTimes >= Times2Rollback) {
+                Longweb.stop();
+                GoAppProcess(); //执行应用自定义处理方式
+            }else{
+                //一分钟后重试
+                setTimeout(function () {
+                    Connect()
+                }, 60 * 1000);
+
+            }
+        } catch (e) { }
+    };
+
+    /*注册应用自定义处理方式*/
+    var GoAppProcess = function () {
+       //TODO: 异常情况提示或者切换其他通讯机制
+    };
+
+    var CreateToken = function () {
+        //TODO:应用自实现token创建
+        return ""
+    };
+
+
+    //连接方法
+    var Connect= function () {
+        //建立通讯连接
+        Token = undefined;
+        if (NeedCheckToken){
+            Token = CreateToken();
+        }
+        Longweb.Connect(Appid, Groupid, ClientId, OnMessage, OnClose, OnError, OnOpen, QueryKey, Token);
+    };
+
+
+
+    var Init = function () {
+        /*判断是否支持WebSocket*/
+        if(window.WebSocket) {
+            Longweb.ConnType = Longweb.ConnType_Websocket;
+        }else{
+            Longweb.ConnType = Longweb.ConnType_Longpoll;
+        }
+        Longweb.WsUrl = wsurl;
+        Longweb.LongpollUrl = longpollurl;
+        Connect();
+    };
+
+    Init();
+
+</script>

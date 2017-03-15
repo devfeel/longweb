@@ -74,6 +74,7 @@ func OnPolling(ctx *dotweb.HttpContext) {
 	logTitle := "[OnPolling][" + ctx.Url() + "]"
 	if ctx.IsHijack {
 		logTitle += "[HiJack]"
+
 	}
 	logTitle += " "
 
@@ -112,7 +113,12 @@ func OnPolling(ctx *dotweb.HttpContext) {
 		}
 	}
 
-	client := NewClient(appId, userId, groupId, false, nil, ctx)
+	isAuth := false
+	if token != "" {
+		isAuth = true
+	}
+
+	client := NewClient(appId, userId, groupId, isAuth, nil, ctx)
 	client.TimeOut = app.TimeOut
 	defer RemoveClient(client)
 
