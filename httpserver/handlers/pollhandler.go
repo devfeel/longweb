@@ -57,6 +57,7 @@ func OnPolling(ctx *dotweb.HttpContext) {
 	appId := ctx.QueryString("appid")
 	groupId := ctx.QueryString("groupid")
 	userId := ctx.QueryString("userid")
+	from := ctx.QueryString("from")
 	querykey := ctx.QueryString("querykey")
 	token := ctx.QueryString("token")
 	//针对jsonp未传情况，默认为callback
@@ -118,7 +119,7 @@ func OnPolling(ctx *dotweb.HttpContext) {
 		isAuth = true
 	}
 
-	client := NewClient(appId, userId, groupId, isAuth, nil, ctx)
+	client := NewClient(appId, userId, groupId, from, isAuth, nil, ctx)
 	client.TimeOut = app.TimeOut
 	defer RemoveClient(client)
 

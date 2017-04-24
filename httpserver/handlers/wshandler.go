@@ -18,6 +18,7 @@ func OnWebSocket(ctx *dotweb.HttpContext) {
 	appId := ctx.QueryString("appid")
 	groupId := ctx.QueryString("groupid")
 	userId := ctx.QueryString("userid")
+	from := ctx.QueryString("from")
 	token := ctx.QueryString("token")
 
 	logger.Debug(logTitle+"connect [RemoteIp:"+ctx.RemoteIP()+"]", LogTarget_HttpRequest)
@@ -49,7 +50,7 @@ func OnWebSocket(ctx *dotweb.HttpContext) {
 		isAuth = true
 	}
 
-	client := NewClient(appId, userId, groupId, isAuth, ctx.WebSocket, nil)
+	client := NewClient(appId, userId, groupId, from, isAuth, ctx.WebSocket, nil)
 	defer RemoveClient(client)
 
 	if client == nil {

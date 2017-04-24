@@ -63,6 +63,7 @@ type UserClient struct {
 	isHijackSend bool
 	timer        *time.Timer
 	TimeOut      int64  //超时时间 - 单位为秒
+	From         string //请求来源，比如site、mobile、jrpt等
 	UserID       string //user id
 	GroupId      string //用户组编号
 	AppId        string //用户应用编号
@@ -72,10 +73,10 @@ type UserClient struct {
 }
 
 //create a new UserClient with socketconn&userinfo
-func NewClient(appId, userId, groupId string, isAuth bool, ws *dotweb.WebSocket, context *dotweb.HttpContext) *UserClient {
+func NewClient(appId, userId, groupId, from string, isAuth bool, ws *dotweb.WebSocket, context *dotweb.HttpContext) *UserClient {
 	atomic.AddUint64(&clientIndex, 1)
 	client := clientPool.Get().(*UserClient)
-	client.Reset(appId, userId, groupId, isAuth, ws, context)
+	client.Reset(appId, userId, groupId, from, isAuth, ws, context)
 	//log the new client info
 	logger.Log("UserClient:NewNormalClient["+client.GetClientInfo()+"] Connect", LogTarget_UserClient, LogLevel_Debug)
 	return client
@@ -129,15 +130,16 @@ func RemoveClient(client *UserClient) {
 	logString := "UserClient::RemoveClient -> [" + client.GetClientInfo() + "]"
 	logger.Log(logString, LogTarget_UserClient, LogLevel_Debug)
 
-	client.Reset("", "", "", false, nil, nil)
+	client.Reset("", "", "", "", false, nil, nil)
 	clientPool.Put(client)
 }
 
 //reset userclient attr
-func (uc *UserClient) Reset(appId, userId, groupId string, isAuth bool, ws *dotweb.WebSocket, context *dotweb.HttpContext) {
+func (uc *UserClient) Reset(appId, userId, groupId, from string, isAuth bool, ws *dotweb.WebSocket, context *dotweb.HttpContext) {
 	uc.AppId = appId
 	uc.UserID = userId
 	uc.GroupId = groupId
+	uc.From = from
 	uc.webSocket = ws
 	uc.httpContext = context
 	uc.IsAuth = isAuth
@@ -229,7 +231,7 @@ func (uc *UserClient) GetReferrerUrl() string {
 		return uc.webSocket.Conn.Request().Referer()
 	}
 	if uc.ConnType == ConnType_LongPoll {
-		return uc.httpContext.Referer()
+		return uc.httpContext.Request.Referer()
 	}
 	return ""
 }
