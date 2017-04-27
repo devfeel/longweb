@@ -133,33 +133,36 @@ func OnPolling(ctx *dotweb.HttpContext) {
 		return
 	}
 
-	//get now data from app
-	targetQuery := ""
-	sourceQuery := "appid=" + appId + "&groupid=" + groupId + "&userid=" + userId + "&querykey=" + querykey
-	parseQuery, errParse := url.ParseQuery(sourceQuery)
-	if errParse != nil {
-		targetQuery = sourceQuery
-		logger.Warn(logTitle+"["+client.GetClientInfo()+"] UrlParse["+sourceQuery+"] error => "+errParse.Error(), LogTarget_LongPoll)
-	} else {
-		targetQuery = parseQuery.Encode()
-	}
-	targetUrl := app.MessageApi + "?" + targetQuery
-	body, _, _, err := httputil.HttpGet(targetUrl)
-	if err != nil {
-		resJson.RetCode = -200009
-		resJson.RetMsg = body
-		resJson.Message = err.Error()
-		logger.Warn(logTitle+"["+client.GetClientInfo()+"] HttpGet["+targetUrl+"] error => "+err.Error(), LogTarget_LongPoll)
-		ctx.WriteJsonp(jsonpcallback, resJson)
-		return
-	} else {
-		logger.Debug(logTitle+"["+client.GetClientInfo()+"] HttpGet["+targetUrl+"] success return => "+body, LogTarget_LongPoll)
-		if body != "" {
-			resJson.RetCode = 0
-			resJson.RetMsg = "ok"
-			resJson.Message = body
+	//如果MessageApi未配置，则忽略首次查询
+	if app.MessageApi != "" {
+		//get now data from app
+		targetQuery := ""
+		sourceQuery := "appid=" + appId + "&groupid=" + groupId + "&userid=" + userId + "&querykey=" + querykey
+		parseQuery, errParse := url.ParseQuery(sourceQuery)
+		if errParse != nil {
+			targetQuery = sourceQuery
+			logger.Warn(logTitle+"["+client.GetClientInfo()+"] UrlParse["+sourceQuery+"] error => "+errParse.Error(), LogTarget_LongPoll)
+		} else {
+			targetQuery = parseQuery.Encode()
+		}
+		targetUrl := app.MessageApi + "?" + targetQuery
+		body, _, _, err := httputil.HttpGet(targetUrl)
+		if err != nil {
+			resJson.RetCode = -200009
+			resJson.RetMsg = body
+			resJson.Message = err.Error()
+			logger.Warn(logTitle+"["+client.GetClientInfo()+"] HttpGet["+targetUrl+"] error => "+err.Error(), LogTarget_LongPoll)
 			ctx.WriteJsonp(jsonpcallback, resJson)
 			return
+		} else {
+			logger.Debug(logTitle+"["+client.GetClientInfo()+"] HttpGet["+targetUrl+"] success return => "+body, LogTarget_LongPoll)
+			if body != "" {
+				resJson.RetCode = 0
+				resJson.RetMsg = "ok"
+				resJson.Message = body
+				ctx.WriteJsonp(jsonpcallback, resJson)
+				return
+			}
 		}
 	}
 
