@@ -5,10 +5,9 @@ import (
 	"github.com/devfeel/longweb/message"
 	"strconv"
 	"strings"
-	"time"
 )
 
-func State(ctx *dotweb.HttpContext) {
+func State(ctx dotweb.Context) error {
 	appcount := len(message.AppPool)
 	strhtml := "<html><body>{content}</body></html>"
 	body := " AppCount => " + strconv.Itoa(appcount)
@@ -43,42 +42,11 @@ func State(ctx *dotweb.HttpContext) {
 	}
 	strhtml = strings.Replace(strhtml, "{content}", body, 1)
 	ctx.WriteString(strhtml)
+	return nil
 }
 
-func StateData(ctx *dotweb.HttpContext) {
-	type AppData struct {
-		AppID           string
-		TotalCount      int
-		NormalWebsocket int
-		AuthWebsocket   int
-		NormalLongPoll  int
-		AuthLongPoll    int
-	}
-	type ConnData struct {
-		Apps     []AppData
-		DataTime time.Time
-	}
-
-	data := ConnData{}
-	data.DataTime = time.Now()
-	data.Apps = make([]AppData, 0)
-	totalData := AppData{AppID: "total"}
-	for appid, appinfo := range message.AppPool {
-		tmpData := AppData{
-			AppID:           appid,
-			TotalCount:      appinfo.GetTotalClientCount(),
-			NormalWebsocket: appinfo.GetWebSocketCount() - appinfo.GetAuthWebSocketCount(),
-			AuthWebsocket:   appinfo.GetAuthWebSocketCount(),
-			NormalLongPoll:  appinfo.GetLongPollCount() - appinfo.GetAuthLongPollCount(),
-			AuthLongPoll:    appinfo.GetAuthLongPollCount(),
-		}
-		data.Apps = append(data.Apps, tmpData)
-		totalData.TotalCount += tmpData.TotalCount
-		totalData.NormalWebsocket += tmpData.NormalWebsocket
-		totalData.AuthWebsocket += tmpData.AuthWebsocket
-		totalData.NormalLongPoll += tmpData.NormalLongPoll
-		totalData.AuthLongPoll += tmpData.AuthLongPoll
-	}
-	data.Apps = append(data.Apps, totalData)
+func StateData(ctx dotweb.Context) error {
+	data := message.GetConnData()
 	ctx.WriteJson(data)
+	return nil
 }

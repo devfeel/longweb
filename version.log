@@ -1,6 +1,10 @@
 ﻿LongWeb - Web实时通信框架版本信息
 支持websocket与长轮询
 
+V1.5
+1、增加自动同步online数据模块，目前支持写入influxdb
+2、2017-05-24 18:00
+
 V1.4.5
 1、BugFix:LongPoll:如果MessageApi未配置，则忽略首次查询
 2、2017-04-27 19:00

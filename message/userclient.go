@@ -58,7 +58,7 @@ type UserClient struct {
 	Index        uint64 //客户端唯一索引
 	ConnType     string
 	webSocket    *dotweb.WebSocket
-	httpContext  *dotweb.HttpContext
+	httpContext  dotweb.Context
 	MessageChan  chan string `json:"-"`
 	isHijackSend bool
 	timer        *time.Timer
@@ -73,7 +73,7 @@ type UserClient struct {
 }
 
 //create a new UserClient with socketconn&userinfo
-func NewClient(appId, userId, groupId, from string, isAuth bool, ws *dotweb.WebSocket, context *dotweb.HttpContext) *UserClient {
+func NewClient(appId, userId, groupId, from string, isAuth bool, ws *dotweb.WebSocket, context dotweb.Context) *UserClient {
 	atomic.AddUint64(&clientIndex, 1)
 	client := clientPool.Get().(*UserClient)
 	client.Reset(appId, userId, groupId, from, isAuth, ws, context)
@@ -116,8 +116,8 @@ func RemoveClient(client *UserClient) {
 	}
 	if client.httpContext != nil {
 		//检查是否hijack模式
-		if client.httpContext.IsHijack {
-			client.httpContext.HijackConn.Close()
+		if client.httpContext.IsHijack() {
+			client.httpContext.HijackConn().Close()
 		}
 		if client.timer != nil {
 			//归还timer对象
@@ -135,7 +135,7 @@ func RemoveClient(client *UserClient) {
 }
 
 //reset userclient attr
-func (uc *UserClient) Reset(appId, userId, groupId, from string, isAuth bool, ws *dotweb.WebSocket, context *dotweb.HttpContext) {
+func (uc *UserClient) Reset(appId, userId, groupId, from string, isAuth bool, ws *dotweb.WebSocket, context dotweb.Context) {
 	uc.AppId = appId
 	uc.UserID = userId
 	uc.GroupId = groupId
@@ -168,11 +168,10 @@ func (uc *UserClient) Reset(appId, userId, groupId, from string, isAuth bool, ws
 //send message to client
 func (uc *UserClient) SendMessage(message string) {
 	defer func() {
-		var errmsg string
 		if err := recover(); err != nil {
-			errmsg = exception.CatchError("UserClient::SendMessage", LogTarget_UserClient, err)
+			ex := exception.CatchError("UserClient::SendMessage", err)
 			//记录访问日志
-			logString := "UserClient::SendMessage -> to:[" + fmt.Sprint(uc) + "] send:[" + message + "] error:[" + errmsg + "]"
+			logString := "UserClient::SendMessage -> to:[" + fmt.Sprint(uc) + "] send:[" + message + "] error:[" + ex.GetErrString() + "]"
 			logger.Log(logString, LogTarget_UserClient, LogLevel_Error)
 		}
 	}()
@@ -231,7 +230,7 @@ func (uc *UserClient) GetReferrerUrl() string {
 		return uc.webSocket.Conn.Request().Referer()
 	}
 	if uc.ConnType == ConnType_LongPoll {
-		return uc.httpContext.Request.Referer()
+		return uc.httpContext.Request().Referer()
 	}
 	return ""
 }

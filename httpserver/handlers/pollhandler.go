@@ -41,7 +41,7 @@ update log:
 3、整合代码，兼容Hijack与HttpRequest --2017-02-07 by pxm
 4、增加jsonp支持 --2017-02-08 17:00
 */
-func OnPolling(ctx *dotweb.HttpContext) {
+func OnPolling(ctx dotweb.Context) error {
 
 	type ResponseJson struct {
 		RetCode int
@@ -66,31 +66,31 @@ func OnPolling(ctx *dotweb.HttpContext) {
 	}
 
 	defer func() {
-		if ctx.IsHijack {
-			ctx.HijackConn.Close()
+		if ctx.IsHijack() {
+			ctx.HijackConn().Close()
 		}
 
 	}()
 
-	logTitle := "[OnPolling][" + ctx.Url() + "]"
-	if ctx.IsHijack {
+	logTitle := "[OnPolling][" + ctx.Request().Url() + "]"
+	if ctx.IsHijack() {
 		logTitle += "[HiJack]"
 
 	}
 	logTitle += " "
 
 	//处理跨域支持
-	ctx.SetHeader("Access-Control-Allow-Origin", "*")
-	ctx.SetHeader("P3P", "CP=\"CURa ADMa DEVa PSAo PSDo OUR BUS UNI PUR INT DEM STA PRE COM NAV OTC NOI DSP COR\"")
+	ctx.Response().SetHeader("Access-Control-Allow-Origin", "*")
+	ctx.Response().SetHeader("P3P", "CP=\"CURa ADMa DEVa PSAo PSDo OUR BUS UNI PUR INT DEM STA PRE COM NAV OTC NOI DSP COR\"")
 
-	logger.Debug(logTitle+"["+ctx.Url()+"] connect [RemoteIp:"+ctx.RemoteIP()+"]", LogTarget_HttpRequest)
+	logger.Debug(logTitle+"["+ctx.Request().Url()+"] connect [RemoteIp:"+ctx.RemoteIP()+"]", LogTarget_HttpRequest)
 
 	if appId == "" || groupId == "" || querykey == "" {
 		resJson.RetCode = -100001
-		resJson.RetMsg = "not supported querystring => " + ctx.Request.RequestURI
+		resJson.RetMsg = "not supported querystring => " + ctx.Request().RequestURI
 		logger.Warn(logTitle+resJson.RetMsg, LogTarget_LongPoll)
 		ctx.WriteJsonp(jsonpcallback, resJson)
-		return
+		return nil
 	}
 
 	app, exists := config.GetAppInfo(appId)
@@ -99,7 +99,7 @@ func OnPolling(ctx *dotweb.HttpContext) {
 		resJson.RetMsg = "no permission connect! => appid[" + appId + "] no exists"
 		logger.Warn(logTitle+resJson.RetMsg, LogTarget_LongPoll)
 		ctx.WriteJsonp(jsonpcallback, resJson)
-		return
+		return nil
 	}
 
 	//如果需要验证token
@@ -110,7 +110,7 @@ func OnPolling(ctx *dotweb.HttpContext) {
 			resJson.RetMsg = retMsg
 			logger.Warn(logTitle+resJson.RetMsg, LogTarget_LongPoll)
 			ctx.WriteJsonp(jsonpcallback, resJson)
-			return
+			return nil
 		}
 	}
 
@@ -130,7 +130,7 @@ func OnPolling(ctx *dotweb.HttpContext) {
 		resJson.RetMsg = "no permission connect! => " + strconv.Itoa(regCode)
 		logger.Warn(logTitle+"["+client.GetClientInfo()+"] "+resJson.RetMsg, LogTarget_LongPoll)
 		ctx.WriteJsonp(jsonpcallback, resJson)
-		return
+		return nil
 	}
 
 	//如果MessageApi未配置，则忽略首次查询
@@ -153,7 +153,7 @@ func OnPolling(ctx *dotweb.HttpContext) {
 			resJson.Message = err.Error()
 			logger.Warn(logTitle+"["+client.GetClientInfo()+"] HttpGet["+targetUrl+"] error => "+err.Error(), LogTarget_LongPoll)
 			ctx.WriteJsonp(jsonpcallback, resJson)
-			return
+			return nil
 		} else {
 			logger.Debug(logTitle+"["+client.GetClientInfo()+"] HttpGet["+targetUrl+"] success return => "+body, LogTarget_LongPoll)
 			if body != "" {
@@ -161,7 +161,7 @@ func OnPolling(ctx *dotweb.HttpContext) {
 				resJson.RetMsg = "ok"
 				resJson.Message = body
 				ctx.WriteJsonp(jsonpcallback, resJson)
-				return
+				return nil
 			}
 		}
 	}
@@ -172,13 +172,13 @@ func OnPolling(ctx *dotweb.HttpContext) {
 		resJson.RetMsg = err.Error()
 		logger.Warn(logTitle+"["+client.GetClientInfo()+"] ReadMessage error => "+err.Error(), LogTarget_LongPoll)
 		ctx.WriteJsonp(jsonpcallback, resJson)
-		return
+		return nil
 	} else {
 		resJson.RetCode = 0
 		resJson.RetMsg = "ok"
 		resJson.Message = strMsg
 		logger.Debug(logTitle+"["+client.GetClientInfo()+"] readmessage return => "+strMsg, LogTarget_LongPoll)
 		ctx.WriteJsonp(jsonpcallback, resJson)
-		return
+		return nil
 	}
 }

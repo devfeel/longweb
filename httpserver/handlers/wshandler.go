@@ -11,9 +11,9 @@ import (
 )
 
 //websocket统一处理入口
-func OnWebSocket(ctx *dotweb.HttpContext) {
+func OnWebSocket(ctx dotweb.Context) error {
 
-	logTitle := "[OnWebSocket][" + ctx.Url() + "] "
+	logTitle := "[OnWebSocket][" + ctx.Request().Url() + "] "
 
 	appId := ctx.QueryString("appid")
 	groupId := ctx.QueryString("groupid")
@@ -24,16 +24,16 @@ func OnWebSocket(ctx *dotweb.HttpContext) {
 	logger.Debug(logTitle+"connect [RemoteIp:"+ctx.RemoteIP()+"]", LogTarget_HttpRequest)
 
 	if appId == "" || groupId == "" {
-		ctx.WebSocket.SendMessage("no permission connect! => appid|groupid is empty")
+		ctx.WebSocket().SendMessage("no permission connect! => appid|groupid is empty")
 		logger.Warn(logTitle+"no permission connect! => appid|groupid is empty", LogTarget_HttpRequest)
-		return
+		return nil
 	}
 
 	app, exists := config.GetAppInfo(appId)
 	if !exists {
-		ctx.WebSocket.SendMessage("no permission connect! => appid[" + appId + "] no exists")
+		ctx.WebSocket().SendMessage("no permission connect! => appid[" + appId + "] no exists")
 		logger.Warn(logTitle+"no permission connect! => appid["+appId+"] no exists", LogTarget_HttpRequest)
-		return
+		return nil
 	}
 
 	//鉴权
@@ -41,8 +41,8 @@ func OnWebSocket(ctx *dotweb.HttpContext) {
 		retCode, retMsg := CheckAuthToken(app, appId, groupId, userId, token)
 		if retCode != 0 {
 			logger.Warn(logTitle+"CheckAuthToken failed => "+strconv.Itoa(retCode)+":"+retMsg, LogTarget_HttpRequest)
-			ctx.WebSocket.SendMessage(retMsg)
-			return
+			ctx.WebSocket().SendMessage(retMsg)
+			return nil
 		}
 	}
 	isAuth := false
@@ -50,13 +50,13 @@ func OnWebSocket(ctx *dotweb.HttpContext) {
 		isAuth = true
 	}
 
-	client := NewClient(appId, userId, groupId, from, isAuth, ctx.WebSocket, nil)
+	client := NewClient(appId, userId, groupId, from, isAuth, ctx.WebSocket(), nil)
 	defer RemoveClient(client)
 
 	if client == nil {
-		ctx.WebSocket.SendMessage("no permission connect! => create client failed")
+		ctx.WebSocket().SendMessage("no permission connect! => create client failed")
 		logger.Warn(logTitle+"no permission connect! => create client failed", LogTarget_HttpRequest)
-		return
+		return nil
 	}
 
 	//注册客户端
@@ -64,7 +64,7 @@ func OnWebSocket(ctx *dotweb.HttpContext) {
 	if regCode != 0 {
 		client.SendMessage("no permission connect! =>  register client failed " + strconv.Itoa(regCode))
 		logger.Warn(logTitle+"["+fmt.Sprint(client)+"] no permission connect! =>  register client failed "+strconv.Itoa(regCode), LogTarget_HttpRequest)
-		return
+		return nil
 	}
 
 	var strMsg string
@@ -90,4 +90,5 @@ func OnWebSocket(ctx *dotweb.HttpContext) {
 		}
 		//TODO:log the request
 	}
+	return nil
 }

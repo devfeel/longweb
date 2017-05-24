@@ -82,11 +82,10 @@ func StartMessageService() {
 //从队列读取消息并处理
 func task_DealMessage(task *task.TaskInfo) {
 	defer func() {
-		var errmsg string
 		if err := recover(); err != nil {
-			errmsg = exception.CatchError("message::task_DealMessage", LogTarget_Message, err)
+			ex := exception.CatchError("message::task_DealMessage", err)
 			//记录访问日志
-			logString := "message::task_DealMessage[" + fmt.Sprint(task.TaskData) + "] error:[" + errmsg + "]"
+			logString := "message::task_DealMessage[" + fmt.Sprint(task.TaskData) + "] error:[" + ex.GetErrString() + "]"
 			logger.Log(logString, LogTarget_Message, LogLevel_Error)
 		}
 	}()

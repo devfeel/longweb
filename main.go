@@ -12,6 +12,7 @@ import (
 	"github.com/devfeel/longweb/framework/log"
 	"github.com/devfeel/longweb/httpserver"
 	"github.com/devfeel/longweb/message"
+	"github.com/devfeel/longweb/task"
 	"os"
 	"os/signal"
 	"runtime"
@@ -65,6 +66,9 @@ func main() {
 
 	//监听系统信号
 	go listenSignal()
+
+	//启动task
+	go task.StartTaskService(currentBaseDir + "/task.conf")
 
 	err := httpserver.StartServer()
 	if err != nil {

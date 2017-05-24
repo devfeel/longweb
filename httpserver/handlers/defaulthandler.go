@@ -10,37 +10,40 @@ import (
 	"runtime"
 )
 
-func Index(ctx *dotweb.HttpContext) {
-	ctx.Response.Header().Set("Content-Type", "text/html; charset=utf-8")
+func Index(ctx dotweb.Context) error {
+	ctx.Response().Header().Set("Content-Type", "text/html; charset=utf-8")
 
 	//ctx.WriteString("welcome to websocket proxy<br>" + ctx.Request.RequestURI + "<br>" + fmt.Sprintln(ctx.Request))
 	ctx.WriteString("welcome to websocket proxy | version=" + constdefine.Version)
+	return nil
 }
 
-func Memstate(ctx *dotweb.HttpContext) {
+func Memstate(ctx dotweb.Context) error {
 	stats := &runtime.MemStats{}
 	runtime.ReadMemStats(stats)
 	ctx.WriteString(fmt.Sprint(stats))
+	return nil
 }
 
-func Test(ctx *dotweb.HttpContext) {
+func Test(ctx dotweb.Context) error {
 	filePath := fileutil.GetCurrentDirectory()
 	filePath = filePath + "/test.html"
 	tmpl, err := template.New("test.html").ParseFiles(filePath)
 	if err != nil {
 		ctx.WriteString("version template Parse error => " + err.Error())
-		return
+		return err
 	}
 	viewdata := make(map[string]string)
-	ctx.Response.Header().Set("Content-Type", "text/html; charset=utf8")
-	err = tmpl.Execute(ctx.Response.Writer(), viewdata)
+	ctx.Response().Header().Set("Content-Type", "text/html; charset=utf8")
+	err = tmpl.Execute(ctx.Response().Writer(), viewdata)
 	if err != nil {
 		ctx.WriteString("version template Execute error => " + err.Error())
-		return
+		return err
 	}
+	return nil
 }
 
-func TestAuth(ctx *dotweb.HttpContext) {
+func TestAuth(ctx dotweb.Context) error {
 	appId := ctx.QueryString("appid")
 	groupId := ctx.QueryString("groupid")
 	userId := ctx.QueryString("userid")
@@ -62,9 +65,11 @@ func TestAuth(ctx *dotweb.HttpContext) {
 	res.UserID = userId
 
 	body := jsonutil.GetJsonString(res)
-	ctx.WriteString(body)
+	_, err := ctx.WriteString(body)
+	return err
 }
 
-func TestMessage(ctx *dotweb.HttpContext) {
-	ctx.WriteString("")
+func TestMessage(ctx dotweb.Context) error {
+	_, err := ctx.WriteString("")
+	return err
 }

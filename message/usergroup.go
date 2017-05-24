@@ -5,6 +5,7 @@ import (
 	"github.com/devfeel/longweb/config"
 	. "github.com/devfeel/longweb/const"
 	"github.com/devfeel/longweb/framework/log"
+	"github.com/influxdata/influxdb/pkg/slices"
 	"strconv"
 	"sync"
 )
@@ -96,45 +97,60 @@ func (app *AppGroups) GetGroupCount() int {
 }
 
 //get app's total client count
-func (app *AppGroups) GetTotalClientCount() int {
+func (app *AppGroups) GetTotalClientCount(groupIds ...string) int {
 	total := 0
 	for _, g := range app.groups {
+		if len(groupIds) > 0 && !slices.Exists(groupIds, g.groupId) {
+			continue
+		}
 		total += g.GetWebSocketClientCount() + g.GetLongPollClientCount()
 	}
 	return total
 }
 
 //get app's websocke client count
-func (app *AppGroups) GetWebSocketCount() int {
+func (app *AppGroups) GetWebSocketCount(groupIds ...string) int {
 	total := 0
 	for _, g := range app.groups {
+		if len(groupIds) > 0 && !slices.Exists(groupIds, g.groupId) {
+			continue
+		}
 		total += g.GetWebSocketClientCount()
 	}
 	return total
 }
 
 //get app's auth websocke client count
-func (app *AppGroups) GetAuthWebSocketCount() int {
+func (app *AppGroups) GetAuthWebSocketCount(groupIds ...string) int {
 	total := 0
 	for _, g := range app.groups {
+		if len(groupIds) > 0 && !slices.Exists(groupIds, g.groupId) {
+			continue
+		}
 		total += g.GetAuthWebSocketClientCount()
 	}
 	return total
 }
 
 //get app's longpoll client count
-func (app *AppGroups) GetLongPollCount() int {
+func (app *AppGroups) GetLongPollCount(groupIds ...string) int {
 	total := 0
 	for _, g := range app.groups {
+		if len(groupIds) > 0 && !slices.Exists(groupIds, g.groupId) {
+			continue
+		}
 		total += g.GetLongPollClientCount()
 	}
 	return total
 }
 
 //get app's auth longpoll client count
-func (app *AppGroups) GetAuthLongPollCount() int {
+func (app *AppGroups) GetAuthLongPollCount(groupIds ...string) int {
 	total := 0
 	for _, g := range app.groups {
+		if len(groupIds) > 0 && !slices.Exists(groupIds, g.groupId) {
+			continue
+		}
 		total += g.GetAuthLongPollClientCount()
 	}
 	return total

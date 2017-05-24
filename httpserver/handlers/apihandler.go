@@ -13,7 +13,7 @@ import (
 //-2:message is empty
 //-10001:message format error
 //-10002:this appid no have permission
-func SendMessage(ctx *dotweb.HttpContext) {
+func SendMessage(ctx dotweb.Context) error {
 	type retJson struct {
 		RetCode int
 		RetMsg  string
@@ -30,7 +30,7 @@ func SendMessage(ctx *dotweb.HttpContext) {
 
 	//push message
 	if result.RetCode == 0 {
-		message := string(ctx.PostBody())
+		message := string(ctx.Request().PostBody())
 		if message != "" {
 			result.RetCode, result.RetMsg = PushMessage(message)
 		} else {
@@ -38,5 +38,6 @@ func SendMessage(ctx *dotweb.HttpContext) {
 			result.RetMsg = "message is empty"
 		}
 	}
-	ctx.WriteJson(result)
+	_, err := ctx.WriteJson(result)
+	return err
 }

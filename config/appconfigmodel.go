@@ -11,6 +11,7 @@ type AppConfig struct {
 	Apps       []AppInfo  `xml:"apps>app"`
 	HttpServer HttpServer `xml:"httpserver"`
 	AllowIps   []string   `xml:"allowips>ip"`
+	SyncNode   *SyncNode  `xml:"syncnode"`
 }
 
 //全局配置
@@ -34,4 +35,17 @@ type AppInfo struct {
 	//鉴权Api
 	AuthApi string `xml:"authapi,attr"`
 	TimeOut int64  `xml:"timeout,attr"`
+}
+
+type SyncNode struct {
+	InfluxdbInfo *InfluxdbInfo `xml:"influxdb"`
+}
+
+//Influxdb信息
+type InfluxdbInfo struct {
+	ID       string `xml:"id,attr"`
+	ServerIP string `xml:"serverip,attr"`
+	UserName string `xml:"username,attr"`
+	Password string `xml:"password,attr"`
+	DBName   string `xml:"dbname,attr"`
 }
