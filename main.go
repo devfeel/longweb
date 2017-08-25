@@ -15,7 +15,7 @@ import (
 	"github.com/devfeel/longweb/task"
 	"os"
 	"os/signal"
-	"runtime"
+	"runtime/debug"
 	"syscall"
 )
 
@@ -32,12 +32,9 @@ func main() {
 		if err := recover(); err != nil {
 			strLog := "longweb:main recover error => " + fmt.Sprintln(err)
 			os.Stdout.Write([]byte(strLog))
-			innerLogger.Error(strLog)
-
-			buf := make([]byte, 4096)
-			n := runtime.Stack(buf, true)
-			innerLogger.Error(string(buf[:n]))
-			os.Stdout.Write(buf[:n])
+			errMsg := strLog + string(debug.Stack())
+			innerLogger.Error(errMsg)
+			os.Stdout.Write([]byte(errMsg))
 		}
 	}()
 

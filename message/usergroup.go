@@ -218,6 +218,7 @@ func (ug *UserGroup) SendMessage(message *Message) int {
 	//发送websocket通道消息
 	go func() {
 		defer waitGroup.Done()
+		ug.userMutex.RLock()
 		for _, client := range ug.websocketClients {
 			needSend = true
 			if message.MessageLevel == MessageLevel_Auth {
@@ -239,10 +240,12 @@ func (ug *UserGroup) SendMessage(message *Message) int {
 				logger.Log("UserGroup["+fmt.Sprint(ug)+"]->SendMessage(WebSocket) Index => "+strconv.Itoa(index)+" success", LogTarget_UserClient, LogLevel_Debug)
 			}
 		}
+		ug.userMutex.RUnlock()
 	}()
 	//发送longpool通道消息
 	go func() {
 		defer waitGroup.Done()
+		ug.userMutex.RLock()
 		for _, client := range ug.longpollClients {
 			needSend = true
 			if client.isHijackSend {
@@ -268,6 +271,7 @@ func (ug *UserGroup) SendMessage(message *Message) int {
 				logger.Log("UserGroup["+fmt.Sprint(ug)+"]->SendMessage(Hijack) Index => "+strconv.Itoa(index)+" success", LogTarget_UserClient, LogLevel_Debug)
 			}
 		}
+		ug.userMutex.RUnlock()
 	}()
 	//等到通道发送完成
 	waitGroup.Wait()
