@@ -237,7 +237,7 @@ func (ug *UserGroup) SendMessage(message *Message) int {
 				client.SendMessage(message.Content)
 			}
 			if index%1000 == 0 {
-				logger.Log("UserGroup["+fmt.Sprint(ug)+"]->SendMessage(WebSocket) Index => "+strconv.Itoa(index)+" success", LogTarget_UserClient, LogLevel_Debug)
+				logger.Log("UserGroup["+ug.groupId+"]->SendMessage(WebSocket) Index => "+strconv.Itoa(index)+" success", LogTarget_UserClient, LogLevel_Debug)
 			}
 		}
 		ug.userMutex.RUnlock()
@@ -268,7 +268,7 @@ func (ug *UserGroup) SendMessage(message *Message) int {
 				client.SendMessage(message.Content)
 			}
 			if index%1000 == 0 {
-				logger.Log("UserGroup["+fmt.Sprint(ug)+"]->SendMessage(Hijack) Index => "+strconv.Itoa(index)+" success", LogTarget_UserClient, LogLevel_Debug)
+				logger.Log("UserGroup["+ug.groupId+"]->SendMessage(Hijack) Index => "+strconv.Itoa(index)+" success", LogTarget_UserClient, LogLevel_Debug)
 			}
 		}
 		ug.userMutex.RUnlock()
@@ -302,11 +302,13 @@ func (ug *UserGroup) GetWebSocketClientCount() int {
 //get usergroup's auth websocketclient count
 func (ug *UserGroup) GetAuthWebSocketClientCount() int {
 	count := 0
+	ug.userMutex.RLock()
 	for _, client := range ug.websocketClients {
 		if client.IsAuth {
 			count += 1
 		}
 	}
+	ug.userMutex.RUnlock()
 	return count
 }
 
@@ -318,10 +320,12 @@ func (ug *UserGroup) GetLongPollClientCount() int {
 //get usergroup's auth longpollclient count
 func (ug *UserGroup) GetAuthLongPollClientCount() int {
 	count := 0
+	ug.userMutex.RLock()
 	for _, client := range ug.longpollClients {
 		if client.IsAuth {
 			count += 1
 		}
 	}
+	ug.userMutex.RUnlock()
 	return count
 }
