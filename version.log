@@ -1,6 +1,12 @@
 ﻿LongWeb - Web实时通信框架版本信息
 支持websocket与长轮询
 
+V1.5.2
+1、增加online处理，当groupid为online时，请求建立成功不主动询问是否有新消息，收到针对全应用推送时，忽略对online的推送
+2、增加常量GroupID_Online
+3、2017-09-07 15:00
+
+
 V1.5.1
 1、修正Message模块BUG，优化报错信息
 2、2017-08-25 18:00

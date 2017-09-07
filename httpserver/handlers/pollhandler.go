@@ -9,6 +9,7 @@ import (
 	. "github.com/devfeel/longweb/message"
 	"net/url"
 	"strconv"
+	"strings"
 )
 
 /*longpoll统一处理入口 - 兼容Hijack与HttpRequest
@@ -134,7 +135,7 @@ func OnPolling(ctx dotweb.Context) error {
 	}
 
 	//如果MessageApi未配置，则忽略首次查询
-	if app.MessageApi != "" {
+	if app.MessageApi != "" && strings.ToLower(groupId) != GroupID_Online {
 		//get now data from app
 		targetQuery := ""
 		sourceQuery := "appid=" + appId + "&groupid=" + groupId + "&userid=" + userId + "&querykey=" + querykey

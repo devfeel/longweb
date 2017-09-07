@@ -7,6 +7,7 @@ import (
 	"github.com/devfeel/longweb/framework/log"
 	"github.com/influxdata/influxdb/pkg/slices"
 	"strconv"
+	"strings"
 	"sync"
 )
 
@@ -172,13 +173,16 @@ func (ag *AppGroups) GetUserGroups() map[string]*UserGroup {
 }
 
 //send a meeage for full app groups
+//online groupid do nothing
 //return send client count
 func (ag *AppGroups) SendMessage(message *Message) int {
 	defer ag.mutex.RUnlock()
 	ag.mutex.RLock()
 	clientcount := 0
 	for _, group := range ag.groups {
-		clientcount += group.SendMessage(message)
+		if strings.ToLower(group.groupId) != GroupID_Online {
+			clientcount += group.SendMessage(message)
+		}
 	}
 	return clientcount
 }
