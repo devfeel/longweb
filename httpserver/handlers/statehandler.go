@@ -41,7 +41,7 @@ func State(ctx dotweb.Context) error {
 		}
 	}
 	strhtml = strings.Replace(strhtml, "{content}", body, 1)
-	ctx.WriteString(strhtml)
+	ctx.WriteHtml(strhtml)
 	return nil
 }
 

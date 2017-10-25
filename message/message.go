@@ -7,6 +7,7 @@ import (
 	"github.com/devfeel/longweb/config"
 	. "github.com/devfeel/longweb/const"
 	"github.com/devfeel/longweb/exception"
+	"github.com/devfeel/longweb/framework/json"
 	"github.com/devfeel/longweb/framework/log"
 	"github.com/devfeel/longweb/framework/task"
 	"strconv"
@@ -92,28 +93,28 @@ func task_DealMessage(task *task.TaskInfo) {
 
 	appId, isOk := task.TaskData.(string)
 	if !isOk {
-		logger.Error("DealMessage["+fmt.Sprintln(task)+"] error => taskdata can't convert to string", LogTarget_Message)
+		logger.Debug("DealMessage["+fmt.Sprintln(task)+"] error => taskdata can't convert to string", LogTarget_Message)
 		return
 	}
 	msg, err := readMessage(appId)
 
 	if err != nil {
-		logger.Error("DealMessage["+fmt.Sprintln(task)+"] error => ["+err.Error()+"]", LogTarget_Message)
+		logger.Debug("DealMessage["+fmt.Sprintln(task)+"] error => ["+err.Error()+"]", LogTarget_Message)
 		return
 	}
 
 	if msg.AppID == "" {
-		logger.Error("DealMessage["+fmt.Sprintln(task)+"] error => AppID is empty ["+fmt.Sprintln(msg)+"]", LogTarget_Message)
+		logger.Debug("DealMessage["+fmt.Sprintln(task)+"] error => AppID is empty ["+fmt.Sprintln(msg)+"]", LogTarget_Message)
 		return
 	}
 	if msg.ToAppID == "" {
-		logger.Error("DealMessage["+fmt.Sprintln(task)+"] error => ToAppID is empty ["+fmt.Sprintln(msg)+"]", LogTarget_Message)
+		logger.Debug("DealMessage["+fmt.Sprintln(task)+"] error => ToAppID is empty ["+fmt.Sprintln(msg)+"]", LogTarget_Message)
 		return
 	}
 
 	//暂时屏蔽跨App转发
 	if msg.ToAppID != msg.AppID {
-		logger.Error("DealMessage["+fmt.Sprintln(task)+"] error => AppID not equal ToAppID ["+fmt.Sprintln(msg)+"]", LogTarget_Message)
+		logger.Debug("DealMessage["+fmt.Sprintln(task)+"] error => AppID not equal ToAppID ["+fmt.Sprintln(msg)+"]", LogTarget_Message)
 		return
 	}
 
@@ -125,7 +126,7 @@ func task_DealMessage(task *task.TaskInfo) {
 	//获取应用用户群组
 	app, exists = GetAppGroups(msg.ToAppID)
 	if !exists {
-		logger.Error("DealMessage["+fmt.Sprintln(task)+"]:GetAppGroups error => not exists ToAppID ["+fmt.Sprintln(msg)+"]", LogTarget_Message)
+		logger.Debug("DealMessage["+fmt.Sprintln(task)+"]:GetAppGroups error => not exists ToAppID ["+fmt.Sprintln(msg)+"]", LogTarget_Message)
 		return
 	}
 
@@ -145,13 +146,13 @@ func task_DealMessage(task *task.TaskInfo) {
 	if msg.ToGroupID != "" {
 		group, exists = app.GetUserGroup(msg.ToGroupID)
 		if !exists {
-			logger.Error("DealMessage["+fmt.Sprintln(task)+"]:GetUserGroup error => not exists ToGroupID ["+fmt.Sprintln(msg)+"]", LogTarget_Message)
+			logger.Debug("DealMessage["+fmt.Sprintln(task)+"]:GetUserGroup error => not exists ToGroupID ["+fmt.Sprintln(msg)+"]", LogTarget_Message)
 			return
 		}
 	}
 
 	//发送给用户组
-	if msg.ToUserID == "" {
+	if msg.ToUserID == "" && msg.ToUserList == nil {
 		logger.Debug("DealMessage["+fmt.Sprintln(task)+"]: Begin SendMessage [ToGroup] ["+fmt.Sprintln(msg)+"]", LogTarget_Message)
 		count := group.SendMessage(msg)
 		logger.Debug("DealMessage["+fmt.Sprintln(task)+"]: End SendMessage [ClientCount="+strconv.Itoa(count)+"] [ToGroup] ["+fmt.Sprintln(msg)+"]", LogTarget_Message)
@@ -162,13 +163,29 @@ func task_DealMessage(task *task.TaskInfo) {
 	if msg.ToUserID != "" {
 		client, exists = group.GetUserClient(msg.ToUserID)
 		if !exists {
-			logger.Error("DealMessage["+fmt.Sprintln(task)+"]:GetUserClient error => not exists ToUserID ["+fmt.Sprintln(msg)+"]", LogTarget_Message)
-			return
+			logger.Debug("DealMessage["+fmt.Sprintln(task)+"]:GetUserClient error => not exists ToUserID ["+fmt.Sprintln(msg)+"]", LogTarget_Message)
 		} else {
 			logger.Debug("DealMessage["+fmt.Sprintln(task)+"]:SendMessage [ToUser] ["+fmt.Sprintln(msg)+"]", LogTarget_Message)
 			client.SendMessage(msg.Content)
 		}
+	}
 
+	//发送给批量用户
+	if msg.ToUserList != nil {
+		var list []string
+		err := jsonutil.Unmarshal(fmt.Sprint(msg.ToUserList), &list)
+		if err != nil {
+			logger.Debug("DealMessage["+fmt.Sprintln(task)+"]:Unmarshal ToUserList error ["+err.Error()+"] ["+fmt.Sprint(msg.ToUserList)+"]", LogTarget_Message)
+		}
+		for _, v := range list {
+			client, exists = group.GetUserClient(v)
+			if !exists {
+				logger.Debug("DealMessage["+fmt.Sprintln(task)+"]:SendToUserList:GetUserClient error => not exists ToUserID ["+v+"]", LogTarget_Message)
+			} else {
+				logger.Debug("DealMessage["+fmt.Sprintln(task)+"]:SendToUserList:SendMessage [ToUser] ["+v+"]", LogTarget_Message)
+				client.SendMessage(msg.Content)
+			}
+		}
 	}
 }
 
@@ -196,6 +213,8 @@ type Message struct {
 	ToGroupID string
 	//消息接收UserID
 	ToUserID string
+	//消息接收UserID列表
+	ToUserList interface{}
 	//消息内容
 	Content string
 }

@@ -7,7 +7,7 @@ import (
 	"github.com/devfeel/longweb/framework/log"
 	"github.com/devfeel/longweb/message"
 	"github.com/devfeel/longweb/repository"
-	"github.com/devfeel/task"
+	"github.com/devfeel/dottask"
 	"time"
 )
 

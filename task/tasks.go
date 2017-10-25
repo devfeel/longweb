@@ -1,8 +1,8 @@
 package task
 
 import (
+	"github.com/devfeel/dottask"
 	"github.com/devfeel/longweb/task/tasks"
-	"github.com/devfeel/task"
 )
 
 var service *task.TaskService
