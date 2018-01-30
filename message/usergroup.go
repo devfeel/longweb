@@ -7,6 +7,7 @@ import (
 	"github.com/devfeel/longweb/framework/log"
 	"github.com/influxdata/influxdb/pkg/slices"
 	"strconv"
+	"strings"
 	"sync"
 )
 
@@ -172,13 +173,16 @@ func (ag *AppGroups) GetUserGroups() map[string]*UserGroup {
 }
 
 //send a meeage for full app groups
+//online groupid do nothing
 //return send client count
 func (ag *AppGroups) SendMessage(message *Message) int {
 	defer ag.mutex.RUnlock()
 	ag.mutex.RLock()
 	clientcount := 0
 	for _, group := range ag.groups {
-		clientcount += group.SendMessage(message)
+		if strings.ToLower(group.groupId) != GroupID_Online {
+			clientcount += group.SendMessage(message)
+		}
 	}
 	return clientcount
 }
@@ -218,6 +222,7 @@ func (ug *UserGroup) SendMessage(message *Message) int {
 	//发送websocket通道消息
 	go func() {
 		defer waitGroup.Done()
+		ug.userMutex.RLock()
 		for _, client := range ug.websocketClients {
 			needSend = true
 			if message.MessageLevel == MessageLevel_Auth {
@@ -236,13 +241,15 @@ func (ug *UserGroup) SendMessage(message *Message) int {
 				client.SendMessage(message.Content)
 			}
 			if index%1000 == 0 {
-				logger.Log("UserGroup["+fmt.Sprint(ug)+"]->SendMessage(WebSocket) Index => "+strconv.Itoa(index)+" success", LogTarget_UserClient, LogLevel_Debug)
+				logger.Log("UserGroup["+ug.groupId+"]->SendMessage(WebSocket) Index => "+strconv.Itoa(index)+" success", LogTarget_UserClient, LogLevel_Debug)
 			}
 		}
+		ug.userMutex.RUnlock()
 	}()
 	//发送longpool通道消息
 	go func() {
 		defer waitGroup.Done()
+		ug.userMutex.RLock()
 		for _, client := range ug.longpollClients {
 			needSend = true
 			if client.isHijackSend {
@@ -265,9 +272,10 @@ func (ug *UserGroup) SendMessage(message *Message) int {
 				client.SendMessage(message.Content)
 			}
 			if index%1000 == 0 {
-				logger.Log("UserGroup["+fmt.Sprint(ug)+"]->SendMessage(Hijack) Index => "+strconv.Itoa(index)+" success", LogTarget_UserClient, LogLevel_Debug)
+				logger.Log("UserGroup["+ug.groupId+"]->SendMessage(Hijack) Index => "+strconv.Itoa(index)+" success", LogTarget_UserClient, LogLevel_Debug)
 			}
 		}
+		ug.userMutex.RUnlock()
 	}()
 	//等到通道发送完成
 	waitGroup.Wait()
@@ -298,11 +306,13 @@ func (ug *UserGroup) GetWebSocketClientCount() int {
 //get usergroup's auth websocketclient count
 func (ug *UserGroup) GetAuthWebSocketClientCount() int {
 	count := 0
+	ug.userMutex.RLock()
 	for _, client := range ug.websocketClients {
 		if client.IsAuth {
 			count += 1
 		}
 	}
+	ug.userMutex.RUnlock()
 	return count
 }
 
@@ -314,10 +324,12 @@ func (ug *UserGroup) GetLongPollClientCount() int {
 //get usergroup's auth longpollclient count
 func (ug *UserGroup) GetAuthLongPollClientCount() int {
 	count := 0
+	ug.userMutex.RLock()
 	for _, client := range ug.longpollClients {
 		if client.IsAuth {
 			count += 1
 		}
 	}
+	ug.userMutex.RUnlock()
 	return count
 }

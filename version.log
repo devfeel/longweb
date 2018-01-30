@@ -1,6 +1,22 @@
 ﻿LongWeb - Web实时通信框架版本信息
 支持websocket与长轮询
 
+V1.5.3
+1、SendMessage API增加指定用户批量名单推送支持，Message增加ToUserList属性
+2、Message.ToUserList:类型为interface，实际调用请使用[]string的json串
+3、Task组件升级为DotTask
+4、2017-10-25 19:00
+
+V1.5.2
+1、增加online处理，当groupid为online时，请求建立成功不主动询问是否有新消息，收到针对全应用推送时，忽略对online的推送
+2、增加常量GroupID_Online
+3、2017-09-07 15:00
+
+
+V1.5.1
+1、修正Message模块BUG，优化报错信息
+2、2017-08-25 18:00
+
 V1.5
 1、增加自动同步online数据模块，目前支持写入influxdb
 2、2017-05-24 18:00
