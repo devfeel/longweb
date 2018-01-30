@@ -1,6 +1,10 @@
 ﻿LongWeb - Web实时通信框架版本信息
 支持websocket与长轮询
 
+V1.5.4
+1、适配dotweb1.4.8版本
+2、2018-01-30 22:45
+
 V1.5.3
 1、SendMessage API增加指定用户批量名单推送支持，Message增加ToUserList属性
 2、Message.ToUserList:类型为interface，实际调用请使用[]string的json串

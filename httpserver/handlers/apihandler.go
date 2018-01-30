@@ -38,6 +38,5 @@ func SendMessage(ctx dotweb.Context) error {
 			result.RetMsg = "message is empty"
 		}
 	}
-	_, err := ctx.WriteJson(result)
-	return err
+	return ctx.WriteJson(result)
 }
