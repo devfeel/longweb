@@ -1,7 +1,7 @@
 package constdefine
 
 const (
-	Version = "V1.5.3 [2017-10-25]"
+	Version = "V1.5.5 [2018-04-04]"
 )
 
 const (
