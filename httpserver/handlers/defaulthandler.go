@@ -65,11 +65,9 @@ func TestAuth(ctx dotweb.Context) error {
 	res.UserID = userId
 
 	body := jsonutil.GetJsonString(res)
-	_, err := ctx.WriteString(body)
-	return err
+	return ctx.WriteString(body)
 }
 
 func TestMessage(ctx dotweb.Context) error {
-	_, err := ctx.WriteString("")
-	return err
+	return ctx.WriteString("")
 }

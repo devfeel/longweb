@@ -9,7 +9,7 @@ type AppConfig struct {
 	XMLName    xml.Name   `xml:"config"`
 	Log        Log        `xml:"log"`
 	Apps       []AppInfo  `xml:"apps>app"`
-	HttpServer HttpServer `xml:"httpserver"`
+	HttpServer *HttpServer `xml:"httpserver"`
 	AllowIps   []string   `xml:"allowips>ip"`
 	SyncNode   *SyncNode  `xml:"syncnode"`
 }
@@ -18,6 +18,9 @@ type AppConfig struct {
 type HttpServer struct {
 	HttpPort  int `xml:"httpport,attr"`
 	PProfPort int `xml:"pprofport,attr"`
+	IsTLS bool `xml:"istls,attr"`
+	TLSCertFile string `xml:"tlscertfile,attr"`
+	TLSKeyFile string `xml:"tlskeyfile,attr"`
 }
 
 //log配置

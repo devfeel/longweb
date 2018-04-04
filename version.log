@@ -1,6 +1,14 @@
 ﻿LongWeb - Web实时通信框架版本信息
 支持websocket与长轮询
 
+V1.5.4
+1、增加TLS支持，通过配置文件启用，启用后支持https与wss协议
+2、app.config文件httpserver节点：
+* 增加istls设置项，默认为false，设为true时启用tls
+* 增加tlscertfile、tlskeyfile设置项，用于配置cert与key文件路径
+4、2018-04-04 09:00
+
+
 V1.5.3
 1、SendMessage API增加指定用户批量名单推送支持，Message增加ToUserList属性
 2、Message.ToUserList:类型为interface，实际调用请使用[]string的json串

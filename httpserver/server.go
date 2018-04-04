@@ -28,9 +28,18 @@ func StartServer() error {
 	pprofport := config.CurrentConfig.HttpServer.PProfPort
 	app.SetPProfConfig(true, pprofport)
 
+	if config.CurrentConfig.HttpServer.IsTLS {
+		//设置TLS
+		app.HttpServer.SetEnabledTLS(true, config.CurrentConfig.HttpServer.TLSCertFile, config.CurrentConfig.HttpServer.TLSKeyFile)
+	}
+
 	// 开始服务
 	port := config.CurrentConfig.HttpServer.HttpPort
-	innerLogger.Debug("dotweb.StartServer => " + strconv.Itoa(port))
+	if config.CurrentConfig.HttpServer.IsTLS{
+		innerLogger.Debug("dotweb.StartServer[Tls] => " + strconv.Itoa(port))
+	}else {
+		innerLogger.Debug("dotweb.StartServer => " + strconv.Itoa(port))
+	}
 	err := app.StartServer(port)
 	return err
 }

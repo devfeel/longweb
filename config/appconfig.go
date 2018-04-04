@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	CurrentConfig  AppConfig
+	CurrentConfig  *AppConfig
 	CurrentBaseDir string
 	innerLogger    *logger.InnerLogger
 	appMap         map[string]*AppInfo
@@ -41,12 +41,14 @@ func InitConfig(configFile string) *AppConfig {
 		os.Exit(1)
 	}
 
-	var result AppConfig
-	err = xml.Unmarshal(content, &result)
+	result := new(AppConfig)
+	err = xml.Unmarshal(content, result)
 	if err != nil {
 		innerLogger.Warn("AppConfig::InitConfig 配置文件[" + configFile + "]解析失败 - " + err.Error())
 		os.Exit(1)
 	}
+
+	innerLogger.Debug("AppConfig::InitConfig Load HttpServer => " + fmt.Sprintln(result.HttpServer))
 
 	innerLogger.Debug("AppConfig::InitConfig Start Load AppInfo")
 	tmpMap := make(map[string]*AppInfo)
@@ -76,7 +78,7 @@ func InitConfig(configFile string) *AppConfig {
 
 	innerLogger.Debug("AppConfig::InitConfig 配置文件[" + configFile + "]完成")
 
-	return &CurrentConfig
+	return CurrentConfig
 }
 
 func GetAppList() map[string]*AppInfo {

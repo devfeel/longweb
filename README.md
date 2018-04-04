@@ -12,6 +12,7 @@ go get -u github.com/devfeel/longweb
 
 ## 2. Features
 * 支持Websocket\longpoll，消灭浏览器兼容之痛
+* 支持http与https，ws与wss协议
 * 原有业务系统无痛接入
 * 支持公开与授权模式(token)
 * 支持配置化部署
