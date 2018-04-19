@@ -25,7 +25,7 @@ func SendMessage(ctx dotweb.Context) error {
 	remoteIp := ctx.RemoteIP()
 	if !config.CheckAllowIP(remoteIp) {
 		result.RetCode = -1
-		result.RetMsg = "not allow ip"
+		result.RetMsg = "not allow ip =>" + remoteIp
 	}
 
 	//push message
