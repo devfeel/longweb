@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"github.com/devfeel/longweb/framework/json"
 )
 
 /*longpoll统一处理入口 - 兼容Hijack与HttpRequest
@@ -57,6 +58,7 @@ func OnPolling(ctx dotweb.Context) error {
 	jsonpcallback := ctx.QueryString("jsonpcallback")
 	appId := ctx.QueryString("appid")
 	groupId := ctx.QueryString("groupid")
+	groupIds := ctx.QueryString("groupids")
 	userId := ctx.QueryString("userid")
 	from := ctx.QueryString("from")
 	querykey := ctx.QueryString("querykey")
@@ -86,12 +88,40 @@ func OnPolling(ctx dotweb.Context) error {
 
 	logger.Debug(logTitle+"["+ctx.Request().Url()+"] connect [RemoteIp:"+ctx.RemoteIP()+"]", LogTarget_HttpRequest)
 
-	if appId == "" || groupId == "" || querykey == "" {
+	if appId == "" || querykey == "" {
 		resJson.RetCode = -100001
-		resJson.RetMsg = "not supported querystring => " + ctx.Request().RequestURI
+		resJson.RetMsg = "not supported querystring [appId is nil or querykey is nil] => " + ctx.Request().RequestURI
 		logger.Warn(logTitle+resJson.RetMsg, LogTarget_LongPoll)
 		ctx.WriteJsonp(jsonpcallback, resJson)
 		return nil
+	}
+
+	if groupId == "" && groupIds == "" {
+		resJson.RetCode = -100001
+		resJson.RetMsg = "not supported querystring [groupId is nil and groupIds is nil] => " + ctx.Request().RequestURI
+		logger.Warn(logTitle+resJson.RetMsg, LogTarget_LongPoll)
+		ctx.WriteJsonp(jsonpcallback, resJson)
+		return nil
+	}
+
+	groupIDs := new(GroupIDs)
+	if groupId == ""{
+		err := jsonutil.Unmarshal(groupIds, groupIDs)
+		if err != nil{
+			resJson.RetCode = -100001
+			resJson.RetMsg = "not supported querystring: groupIds is not correct format => " + groupIds
+			logger.Warn(logTitle+resJson.RetMsg, LogTarget_LongPoll)
+			ctx.WriteJsonp(jsonpcallback, resJson)
+			return nil
+		}
+
+		if len(groupIDs.IDs) <= 0{
+			resJson.RetCode = -100001
+			resJson.RetMsg = "not supported querystring: groupIds is not contain ids => " + groupIds
+			logger.Warn(logTitle+resJson.RetMsg, LogTarget_LongPoll)
+			ctx.WriteJsonp(jsonpcallback, resJson)
+			return nil
+		}
 	}
 
 	app, exists := config.GetAppInfo(appId)
@@ -105,7 +135,7 @@ func OnPolling(ctx dotweb.Context) error {
 
 	//如果需要验证token
 	if token != "" {
-		retCode, retMsg := CheckAuthToken(app, appId, groupId, userId, token)
+		retCode, retMsg := CheckAuthToken(app, appId, groupId, groupIds, userId, token)
 		if retCode != 0 {
 			resJson.RetCode = retCode
 			resJson.RetMsg = retMsg
@@ -120,12 +150,12 @@ func OnPolling(ctx dotweb.Context) error {
 		isAuth = true
 	}
 
-	client := NewClient(appId, userId, groupId, from, isAuth, nil, ctx)
+	client := NewClient(appId, userId, groupId, from, groupIDs.IDs, isAuth, nil, ctx)
 	client.TimeOut = app.TimeOut
 	defer RemoveClient(client)
 
 	//注册客户端
-	_, regCode := RegisterClient(client)
+	regCode := RegisterClient(client)
 	if regCode != 0 {
 		resJson.RetCode = -100003
 		resJson.RetMsg = "no permission connect! => " + strconv.Itoa(regCode)

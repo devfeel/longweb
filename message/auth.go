@@ -27,7 +27,7 @@ token：鉴权token
 update log:
 1、初始版本 --2017-02-07 13:00 by pxm
 */
-func CheckAuthToken(app *config.AppInfo, appId, groupId, userId, token string) (RetCode int, RetMsg string) {
+func CheckAuthToken(app *config.AppInfo, appId, groupId, groupIds, userId, token string) (RetCode int, RetMsg string) {
 	RetCode = 0
 	RetMsg = ""
 	//check AuthApi
@@ -46,7 +46,7 @@ func CheckAuthToken(app *config.AppInfo, appId, groupId, userId, token string) (
 		UserID  string
 	}
 
-	targetUrl := app.AuthApi + "?appid=" + appId + "&groupid=" + groupId + "&userid=" + userId + "&token=" + token
+	targetUrl := app.AuthApi + "?appid=" + appId + "&groupid=" + groupId + "&groupids="+groupIds + "&userid=" + userId + "&token=" + token
 	authbody, _, _, autherr := httputil.HttpGet(targetUrl)
 	if autherr != nil {
 		RetCode = -101002

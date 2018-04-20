@@ -1,6 +1,11 @@
 ﻿LongWeb - Web实时通信框架版本信息
 支持websocket与长轮询
 
+V1.5.6
+1、OnWebSocket\OnPolling增加GroupIDs参数
+2、支持单连接监听多GroupID的消息推送
+3、2018-04-20 18:00
+
 V1.5.5.1
 1、ApiHandler.SendMessage增加CheckRemoteIP失败时返回remoteIp信息
 2、2018-04-19 16:00

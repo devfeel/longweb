@@ -8,25 +8,56 @@ import (
 	"github.com/devfeel/longweb/framework/log"
 	. "github.com/devfeel/longweb/message"
 	"strconv"
+	"github.com/devfeel/longweb/framework/json"
 )
+
+
+type GroupIDs struct{
+	IDs []string
+}
+
 
 //websocket统一处理入口
 func OnWebSocket(ctx dotweb.Context) error {
+
 
 	logTitle := "[OnWebSocket][" + ctx.Request().Url() + "] "
 
 	appId := ctx.QueryString("appid")
 	groupId := ctx.QueryString("groupid")
+	groupIds := ctx.QueryString("groupids")
 	userId := ctx.QueryString("userid")
 	from := ctx.QueryString("from")
 	token := ctx.QueryString("token")
 
 	logger.Debug(logTitle+"connect [RemoteIp:"+ctx.RemoteIP()+"]", LogTarget_HttpRequest)
 
-	if appId == "" || groupId == "" {
-		ctx.WebSocket().SendMessage("no permission connect! => appid|groupid is empty")
-		logger.Warn(logTitle+"no permission connect! => appid|groupid is empty", LogTarget_HttpRequest)
+	if appId == "" {
+		ctx.WebSocket().SendMessage("no permission connect! => appid is empty")
+		logger.Warn(logTitle+"no permission connect! => appid is empty", LogTarget_HttpRequest)
 		return nil
+	}
+
+	if groupId == "" && groupIds == "" {
+		ctx.WebSocket().SendMessage("no permission connect! => groupId and groupIds is empty")
+		logger.Warn(logTitle+"no permission connect! => groupId and groupIds is empty", LogTarget_HttpRequest)
+		return nil
+	}
+
+	groupIDs := new(GroupIDs)
+	if groupId == ""{
+		err := jsonutil.Unmarshal(groupIds, groupIDs)
+		if err != nil{
+			ctx.WebSocket().SendMessage("no permission connect! => groupIds is not correct format => " + groupIds)
+			logger.Warn(logTitle+"no permission connect! => groupIds is not correct format => " + groupIds, LogTarget_HttpRequest)
+			return nil
+		}
+
+		if len(groupIDs.IDs) <= 0{
+			ctx.WebSocket().SendMessage("no permission connect! => groupIds is not contain ids")
+			logger.Warn(logTitle+"no permission connect! => groupIds is not contain ids", LogTarget_HttpRequest)
+			return nil
+		}
 	}
 
 	app, exists := config.GetAppInfo(appId)
@@ -38,7 +69,7 @@ func OnWebSocket(ctx dotweb.Context) error {
 
 	//鉴权
 	if token != "" {
-		retCode, retMsg := CheckAuthToken(app, appId, groupId, userId, token)
+		retCode, retMsg := CheckAuthToken(app, appId, groupId, groupIds, userId, token)
 		if retCode != 0 {
 			logger.Warn(logTitle+"CheckAuthToken failed => "+strconv.Itoa(retCode)+":"+retMsg, LogTarget_HttpRequest)
 			ctx.WebSocket().SendMessage(retMsg)
@@ -50,7 +81,7 @@ func OnWebSocket(ctx dotweb.Context) error {
 		isAuth = true
 	}
 
-	client := NewClient(appId, userId, groupId, from, isAuth, ctx.WebSocket(), nil)
+	client := NewClient(appId, userId, groupId, from, groupIDs.IDs, isAuth, ctx.WebSocket(), nil)
 	defer RemoveClient(client)
 
 	if client == nil {
@@ -60,7 +91,7 @@ func OnWebSocket(ctx dotweb.Context) error {
 	}
 
 	//注册客户端
-	_, regCode := RegisterClient(client)
+	regCode := RegisterClient(client)
 	if regCode != 0 {
 		client.SendMessage("no permission connect! =>  register client failed " + strconv.Itoa(regCode))
 		logger.Warn(logTitle+"["+fmt.Sprint(client)+"] no permission connect! =>  register client failed "+strconv.Itoa(regCode), LogTarget_HttpRequest)

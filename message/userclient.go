@@ -66,6 +66,7 @@ type UserClient struct {
 	From         string //请求来源，比如site、mobile、jrpt等
 	UserID       string //user id
 	GroupId      string //用户组编号
+	GroupIds     []string //多用户组编号
 	AppId        string //用户应用编号
 	RemoteIP     string //用户IP信息“ip:port”
 	ReferrerUrl  string //ReferrerUrl
@@ -73,10 +74,10 @@ type UserClient struct {
 }
 
 //create a new UserClient with socketconn&userinfo
-func NewClient(appId, userId, groupId, from string, isAuth bool, ws *dotweb.WebSocket, context dotweb.Context) *UserClient {
+func NewClient(appId, userId, groupId, from string, groupIds []string, isAuth bool, ws *dotweb.WebSocket, context dotweb.Context) *UserClient {
 	atomic.AddUint64(&clientIndex, 1)
 	client := clientPool.Get().(*UserClient)
-	client.Reset(appId, userId, groupId, from, isAuth, ws, context)
+	client.Reset(appId, userId, groupId, from, groupIds, isAuth, ws, context)
 	//log the new client info
 	logger.Log("UserClient:NewNormalClient["+client.GetClientInfo()+"] Connect", LogTarget_UserClient, LogLevel_Debug)
 	return client
@@ -87,17 +88,36 @@ func NewClient(appId, userId, groupId, from string, isAuth bool, ws *dotweb.WebS
 //-10001: not exists appid
 //-10002: usergroup error
 //0: ok
-func RegisterClient(client *UserClient) (*UserGroup, int) {
+func RegisterClient(client *UserClient) int {
 	app, exists := GetAppGroups(client.AppId)
 	if !exists {
-		return nil, -10001
+		return -10001
 	}
-	userGroup := app.GetAndInitUserGroup(client.AppId, client.GroupId)
-	if userGroup == nil {
-		return nil, -10002
+
+	if client.GroupId != ""{
+		if client.GroupIds == nil || len(client.GroupIds) <= 0{
+			client.GroupIds = []string{}
+		}
+		isExists := false
+		for _, v := range client.GroupIds{
+			if v == client.GroupId{
+				isExists = true
+				break
+			}
+		}
+		if !isExists {
+			client.GroupIds = append(client.GroupIds, client.GroupId)
+		}
 	}
-	userGroup.AddClient(client)
-	return userGroup, 0
+
+	for _, groupId := range client.GroupIds{
+		userGroup := app.GetAndInitUserGroup(client.AppId, groupId)
+		if userGroup == nil {
+			return -10002
+		}
+		userGroup.AddClient(client)
+	}
+	return 0
 }
 
 //remove userclient with roomid
@@ -107,9 +127,18 @@ func RemoveClient(client *UserClient) {
 		logger.Log(logString, LogTarget_UserClient, LogLevel_Debug)
 		return
 	}
-	group, exists := GetUserGroup(client.AppId, client.GroupId)
-	if exists {
-		group.DeleteClient(client)
+
+	if client.GroupId != ""{
+		if client.GroupIds == nil || len(client.GroupIds) <= 0{
+			client.GroupIds = []string{}
+		}
+		client.GroupIds = append(client.GroupIds, client.GroupId)
+	}
+	for _, groupId := range client.GroupIds {
+		group, exists := GetUserGroup(client.AppId, groupId)
+		if exists {
+			group.DeleteClient(client)
+		}
 	}
 	if client.webSocket != nil {
 		client.webSocket.Conn.Close()
@@ -130,15 +159,16 @@ func RemoveClient(client *UserClient) {
 	logString := "UserClient::RemoveClient -> [" + client.GetClientInfo() + "]"
 	logger.Log(logString, LogTarget_UserClient, LogLevel_Debug)
 
-	client.Reset("", "", "", "", false, nil, nil)
+	client.Reset("", "", "", "", nil, false, nil, nil)
 	clientPool.Put(client)
 }
 
 //reset userclient attr
-func (uc *UserClient) Reset(appId, userId, groupId, from string, isAuth bool, ws *dotweb.WebSocket, context dotweb.Context) {
+func (uc *UserClient) Reset(appId, userId, groupId, from string, groupIds []string, isAuth bool, ws *dotweb.WebSocket, context dotweb.Context) {
 	uc.AppId = appId
 	uc.UserID = userId
 	uc.GroupId = groupId
+	uc.GroupIds = groupIds
 	uc.From = from
 	uc.webSocket = ws
 	uc.httpContext = context
