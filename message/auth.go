@@ -5,6 +5,7 @@ import (
 	"github.com/devfeel/longweb/framework/http"
 	"github.com/devfeel/longweb/framework/json"
 	"strconv"
+	"net/url"
 )
 
 /*检查应用鉴权结果
@@ -46,7 +47,7 @@ func CheckAuthToken(app *config.AppInfo, appId, groupId, groupIds, userId, token
 		UserID  string
 	}
 
-	targetUrl := app.AuthApi + "?appid=" + appId + "&groupid=" + groupId + "&groupids="+groupIds + "&userid=" + userId + "&token=" + token
+	targetUrl := app.AuthApi + "?appid=" + appId + "&groupid=" + groupId + "&groupids="+url.QueryEscape(groupIds) + "&userid=" + userId + "&token=" + token
 	authbody, _, _, autherr := httputil.HttpGet(targetUrl)
 	if autherr != nil {
 		RetCode = -101002
