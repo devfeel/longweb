@@ -1,12 +1,42 @@
-<script type="text/javascript" src="http://static.emoney.cn/www/officalWebStatic/js/jquery.min.1.8.3.js"></script>
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+<p><input id="btn1" type="button" value="connect normal1" /></p>
+<p><textarea cols="50" rows="20" id="txt1"></textarea></p>
+<script>
+    window.onload = initBody;
+    function initBody(){
+        var oBtn1 = document.getElementById('btn1');
+        oBtn1.onclick = OnButton1;
+    }
+
+    function OnButton1() {
+        LongWebInit()
+    }
+
+
+</script>
+
+
+
+</body>
+</html>
+
+
+<script type="text/javascript" src="http://www.jq22.com/jquery/jquery-1.9.1.js"></script>
 
 <script type="text/javascript" src="js/longweb.js" ></script>
 <script>
 
     var QueryKey = "init"; //TODO:应用初始化相关值
     var NeedCheckToken = false;//是否需要验证token
-    var wsurl = "ws://127.0.0.1:8100/ws/onsocket";
-    var longpollurl = "http://127.0.0.1:8100/poll/onpolling";
+    var wsurl = "ws://47.100.35.96:8100/ws/onsocket";
+    var longpollurl = "http://47.100.35.96:8100/poll/onpolling";
     var ClientId = NewGuid();            //每次创建一个Client客户端标识
     var Appid = '10000';                //调用的应用ID
     var Groupid = '1';                  //调用的群组ID
@@ -17,6 +47,9 @@
     /*注册消息处理方法*/
     var OnMessage = function (event) {
         //ToDo : 应用处理消息的逻辑块
+        var oTxt = document.getElementById('txt1');
+        oTxt.value =oTxt.value + "\r\n" + event.data;
+        oTxt.scrollTop = oTxt.scrollHeight;
         try { console.log(event.data); } catch (e) { }
 
         //更新消息识别Key 防止重复循环
@@ -31,12 +64,18 @@
     };
     var OnOpen = function () {
         //ToDo: 连接成功
+        var oTxt = document.getElementById('txt1');
+        oTxt.value =oTxt.value + "\r\nConnect Success";
+        oTxt.scrollTop = oTxt.scrollHeight;
         try { console.log('Connect success!'); } catch (e) { }
     };
     /*注册Longweb关闭事件处理办法*/
     var OnClose = function (event) {
         try {
             //TODO:关闭事件，仅对websocket有效
+            var oTxt = document.getElementById('txt1');
+            oTxt.value =oTxt.value + "\r\n" + "connect close";
+            oTxt.scrollTop = oTxt.scrollHeight;
             console.log('OnClose');
             if (Longweb.ConnType() == Longweb.ConnType_Websocket) {
                 setTimeout(Connect, 2000);
@@ -47,6 +86,11 @@
     var OnError = function (event) {
         try {
             //TODO:应用自定义异常处理
+            var oTxt = document.getElementById('txt1');
+            for ( var p in event) {
+                oTxt.value =oTxt.value + "\r\n" + "connect error[" + p+ "] =>" + event[p];
+                oTxt.scrollTop = oTxt.scrollHeight;
+            }
             console.log('OnError' +event);
             Longweb._FailTimes++;
             if (Longweb._FailTimes >= Times2Rollback) {
@@ -85,7 +129,7 @@
 
 
 
-    var Init = function () {
+    var LongWebInit = function () {
         /*判断是否支持WebSocket*/
         if(window.WebSocket) {
             Longweb.ConnType = Longweb.ConnType_Websocket;
@@ -97,6 +141,6 @@
         Connect();
     };
 
-    Init();
+    //LongWebInit();
 
 </script>
