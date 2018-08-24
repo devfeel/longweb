@@ -83,6 +83,7 @@ var Longweb = {
     //连接
     Connect:function (appid, groupid, userid, OnMessage, OnClose, OnError, OnOpen, querykey, Token) {
         if (Longweb._run != 1) { return; }
+        Longweb.ConnType = (window.WebSocket)? this.ConnType_Websocket : this.ConnType_Longpoll;
         if (Longweb.ConnType == Longweb.ConnType_Websocket) {//支持WebSocket，启用WebSocket通讯
             Longweb.initwebsocket(Appid, Groupid, ClientId, OnMessage, OnClose, OnError, OnOpen, QueryKey, Token);
         } else {
