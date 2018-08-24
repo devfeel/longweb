@@ -18,15 +18,17 @@ var Longweb = {
     initwebsocket: function (appid, groupid, userid, OnMessage, OnClose, OnError, OnOpen, querykey, Token) {
         if (Longweb._run != 1) { return; }
 
-        var wsc; 
+        var wsc,TokenStr,wsURL;
+        TokenStr = (typeof (Token) != "undefined") ?  '&token=' + Token : '';
+        wsURL = Longweb.WsUrl + '?appid=' + appid + '&groupid=' + groupid + '&userid=' + userid + '' + TokenStr;
+
+        if (!window.WebSocket && window.MozWebSocket)
+            window.WebSocket=window.MozWebSocket;
+
         try {
-            if (typeof (Token) != "undefined") {
-                wsc = new WebSocket(Longweb.WsUrl + '?appid=' + appid + '&groupid=' + groupid + '&userid=' + userid + '&token=' + Token);
-            } else {
-                wsc = new WebSocket(Longweb.WsUrl + '?appid=' + appid + '&groupid=' + groupid + '&userid=' + userid);
-            }
+            wsc = new WebSocket(wsURL);
         } catch (e) {
-            console.log("WebSocket Initialize Error");
+            console.log("WebSocket Initialize Error" + e);
         }
         
         wsc.onopen = OnOpen;
