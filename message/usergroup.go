@@ -41,8 +41,14 @@ func GetUserGroup(appId, groupId string) (*UserGroup, bool) {
 
 //get appgroups with appid
 func GetAppGroups(appId string) (*AppGroups, bool) {
-	defer appLock.RUnlock()
 	appLock.RLock()
+	defer appLock.RUnlock()
+	app, mok := AppPool[appId]
+	return app, mok
+}
+
+//get appgroups with appid
+func GetState_AppGroups(appId string) (*AppGroups, bool) {
 	app, mok := AppPool[appId]
 	return app, mok
 }
@@ -98,77 +104,75 @@ func (app *AppGroups) GetGroupCount() int {
 }
 
 //get app's total client count
-func (app *AppGroups) GetTotalClientCount(groupIds ...string) int {
+func (app *AppGroups) GetState_TotalClientCount(groupIds ...string) int {
 	total := 0
 	for _, g := range app.groups {
 		if len(groupIds) > 0 && !slices.Exists(groupIds, g.groupId) {
 			continue
 		}
-		total += g.GetWebSocketClientCount() + g.GetLongPollClientCount()
+		total += g.GetState_WebSocketClientCount() + g.GetState_LongPollClientCount()
 	}
 	return total
 }
 
 //get app's websocke client count
-func (app *AppGroups) GetWebSocketCount(groupIds ...string) int {
+func (app *AppGroups) GetState_WebSocketCount(groupIds ...string) int {
 	total := 0
 	for _, g := range app.groups {
 		if len(groupIds) > 0 && !slices.Exists(groupIds, g.groupId) {
 			continue
 		}
-		total += g.GetWebSocketClientCount()
+		total += g.GetState_WebSocketClientCount()
 	}
 	return total
 }
 
 //get app's auth websocke client count
-func (app *AppGroups) GetAuthWebSocketCount(groupIds ...string) int {
+func (app *AppGroups) GetState_AuthWebSocketCount(groupIds ...string) int {
 	total := 0
 	for _, g := range app.groups {
 		if len(groupIds) > 0 && !slices.Exists(groupIds, g.groupId) {
 			continue
 		}
-		total += g.GetAuthWebSocketClientCount()
+		total += g.GetState_AuthWebSocketClientCount()
 	}
 	return total
 }
 
 //get app's longpoll client count
-func (app *AppGroups) GetLongPollCount(groupIds ...string) int {
+func (app *AppGroups) GetState_LongPollCount(groupIds ...string) int {
 	total := 0
 	for _, g := range app.groups {
 		if len(groupIds) > 0 && !slices.Exists(groupIds, g.groupId) {
 			continue
 		}
-		total += g.GetLongPollClientCount()
+		total += g.GetState_LongPollClientCount()
 	}
 	return total
 }
 
 //get app's auth longpoll client count
-func (app *AppGroups) GetAuthLongPollCount(groupIds ...string) int {
+func (app *AppGroups) GetState_AuthLongPollCount(groupIds ...string) int {
 	total := 0
 	for _, g := range app.groups {
 		if len(groupIds) > 0 && !slices.Exists(groupIds, g.groupId) {
 			continue
 		}
-		total += g.GetAuthLongPollClientCount()
+		total += g.GetState_AuthLongPollClientCount()
 	}
 	return total
 }
 
 //获取指定用户组
 func (ag *AppGroups) GetUserGroup(groupId string) (*UserGroup, bool) {
-	defer ag.mutex.RUnlock()
 	ag.mutex.RLock()
+	defer ag.mutex.RUnlock()
 	group, mok := ag.groups[groupId]
 	return group, mok
 }
 
 //获取用户组列表
-func (ag *AppGroups) GetUserGroups() map[string]*UserGroup {
-	defer ag.mutex.RUnlock()
-	ag.mutex.RLock()
+func (ag *AppGroups) GetState_UserGroups() map[string]*UserGroup {
 	return ag.groups
 }
 
@@ -176,8 +180,8 @@ func (ag *AppGroups) GetUserGroups() map[string]*UserGroup {
 //online groupid do nothing
 //return send client count
 func (ag *AppGroups) SendMessage(message *Message) int {
-	defer ag.mutex.RUnlock()
 	ag.mutex.RLock()
+	defer ag.mutex.RUnlock()
 	clientcount := 0
 	for _, group := range ag.groups {
 		if strings.ToLower(group.groupId) != GroupID_Online {
@@ -285,8 +289,8 @@ func (ug *UserGroup) SendMessage(message *Message) int {
 
 //获取指定UserId的用户客户端代理
 func (ug *UserGroup) GetUserClient(userId string) (*UserClient, bool) {
-	defer ug.userMutex.RUnlock()
 	ug.userMutex.RLock()
+	defer ug.userMutex.RUnlock()
 	client, mok := ug.websocketClients[userId]
 	if !mok {
 		client, mok = ug.longpollClients[userId]
@@ -299,37 +303,33 @@ func (ug *UserGroup) GetGroupId() string {
 }
 
 //get usergroup's websocketclient count
-func (ug *UserGroup) GetWebSocketClientCount() int {
+func (ug *UserGroup) GetState_WebSocketClientCount() int {
 	return len(ug.websocketClients)
 }
 
 //get usergroup's auth websocketclient count
-func (ug *UserGroup) GetAuthWebSocketClientCount() int {
+func (ug *UserGroup) GetState_AuthWebSocketClientCount() int {
 	count := 0
-	ug.userMutex.RLock()
 	for _, client := range ug.websocketClients {
 		if client.IsAuth {
 			count += 1
 		}
 	}
-	ug.userMutex.RUnlock()
 	return count
 }
 
 //get usergroup's longpollclient count
-func (ug *UserGroup) GetLongPollClientCount() int {
+func (ug *UserGroup) GetState_LongPollClientCount() int {
 	return len(ug.longpollClients)
 }
 
 //get usergroup's auth longpollclient count
-func (ug *UserGroup) GetAuthLongPollClientCount() int {
+func (ug *UserGroup) GetState_AuthLongPollClientCount() int {
 	count := 0
-	ug.userMutex.RLock()
 	for _, client := range ug.longpollClients {
 		if client.IsAuth {
 			count += 1
 		}
 	}
-	ug.userMutex.RUnlock()
 	return count
 }

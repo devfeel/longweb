@@ -16,25 +16,25 @@ func State(ctx dotweb.Context) error {
 	body += "<br>"
 	app := ctx.QueryString("app")
 	if app != "" {
-		appinfo, exists := message.GetAppGroups(app)
+		appinfo, exists := message.GetState_AppGroups(app)
 		if !exists {
 			body += "<br> not exists this app"
 		} else {
 			body += "<br>AppInfo [" + app + "] [UserGroupCount:" + strconv.Itoa(appinfo.GetGroupCount()) + "]"
 			body += "<br>UserGroupList:"
-			body += "<br>[" + strconv.Itoa(appinfo.GetTotalClientCount()) + "] =>"
-			body += " [NW=" + strconv.Itoa(appinfo.GetWebSocketCount()-appinfo.GetAuthWebSocketCount()) + "]"
-			body += " [AW=" + strconv.Itoa(appinfo.GetAuthWebSocketCount()) + "]"
-			body += " [NL=" + strconv.Itoa(appinfo.GetLongPollCount()-appinfo.GetAuthLongPollCount()) + "]"
-			body += " [AL=" + strconv.Itoa(appinfo.GetAuthLongPollCount()) + "]"
+			body += "<br>[" + strconv.Itoa(appinfo.GetState_TotalClientCount()) + "] =>"
+			body += " [NW=" + strconv.Itoa(appinfo.GetState_WebSocketCount()-appinfo.GetState_AuthWebSocketCount()) + "]"
+			body += " [AW=" + strconv.Itoa(appinfo.GetState_AuthWebSocketCount()) + "]"
+			body += " [NL=" + strconv.Itoa(appinfo.GetState_LongPollCount()-appinfo.GetState_AuthLongPollCount()) + "]"
+			body += " [AL=" + strconv.Itoa(appinfo.GetState_AuthLongPollCount()) + "]"
 			body += "<br>"
-			for _, v := range appinfo.GetUserGroups() {
+			for _, v := range appinfo.GetState_UserGroups() {
 				body += "<br>"
-				line := "[" + v.GetGroupId() + " : " + strconv.Itoa(v.GetWebSocketClientCount()+v.GetLongPollClientCount()) + "] => "
-				line += "[NW=" + strconv.Itoa(v.GetWebSocketClientCount()-v.GetAuthWebSocketClientCount()) + "] "
-				line += "[AW=" + strconv.Itoa(v.GetAuthWebSocketClientCount()) + "] "
-				line += "[NL=" + strconv.Itoa(v.GetLongPollClientCount()-v.GetAuthLongPollClientCount()) + "] "
-				line += "[AL=" + strconv.Itoa(v.GetAuthLongPollClientCount()) + "]"
+				line := "[" + v.GetGroupId() + " : " + strconv.Itoa(v.GetState_WebSocketClientCount()+v.GetState_LongPollClientCount()) + "] => "
+				line += "[NW=" + strconv.Itoa(v.GetState_WebSocketClientCount()-v.GetState_AuthWebSocketClientCount()) + "] "
+				line += "[AW=" + strconv.Itoa(v.GetState_AuthWebSocketClientCount()) + "] "
+				line += "[NL=" + strconv.Itoa(v.GetState_LongPollClientCount()-v.GetState_AuthLongPollClientCount()) + "] "
+				line += "[AL=" + strconv.Itoa(v.GetState_AuthLongPollClientCount()) + "]"
 
 				body += line
 			}

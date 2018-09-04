@@ -26,11 +26,11 @@ func GetConnData() *ConnData {
 	for appid, appinfo := range AppPool {
 		tmpData := AppConnData{
 			AppID:           appid,
-			TotalCount:      appinfo.GetTotalClientCount(OnlineGroupID),
-			NormalWebsocket: appinfo.GetWebSocketCount(OnlineGroupID) - appinfo.GetAuthWebSocketCount(OnlineGroupID),
-			AuthWebsocket:   appinfo.GetAuthWebSocketCount(OnlineGroupID),
-			NormalLongPoll:  appinfo.GetLongPollCount(OnlineGroupID) - appinfo.GetAuthLongPollCount(OnlineGroupID),
-			AuthLongPoll:    appinfo.GetAuthLongPollCount(OnlineGroupID),
+			TotalCount:      appinfo.GetState_TotalClientCount(OnlineGroupID),
+			NormalWebsocket: appinfo.GetState_WebSocketCount(OnlineGroupID) - appinfo.GetState_AuthWebSocketCount(OnlineGroupID),
+			AuthWebsocket:   appinfo.GetState_AuthWebSocketCount(OnlineGroupID),
+			NormalLongPoll:  appinfo.GetState_LongPollCount(OnlineGroupID) - appinfo.GetState_AuthLongPollCount(OnlineGroupID),
+			AuthLongPoll:    appinfo.GetState_AuthLongPollCount(OnlineGroupID),
 		}
 		data.Apps = append(data.Apps, tmpData)
 		totalData.TotalCount += tmpData.TotalCount

@@ -135,9 +135,9 @@ func task_DealMessage(task *task.TaskInfo) {
 	//发送给整个应用用户群
 	//tips:暂未过滤
 	if msg.ToGroupID == "" && msg.ToUserID == "" {
-		logger.Debug("DealMessage["+fmt.Sprintln(task)+"]: Begin SendMessage [ToApp] ["+fmt.Sprintln(msg)+"]", LogTarget_Message)
+		logger.Debug("DealMessage["+fmt.Sprintln(task)+"]: SendMessage Begin [ToApp] ["+fmt.Sprintln(msg)+"]", LogTarget_Message)
 		count := app.SendMessage(msg)
-		logger.Debug("DealMessage["+fmt.Sprintln(task)+"]: End SendMessage [ClientCount="+strconv.Itoa(count)+"] [ToApp] ["+fmt.Sprintln(msg)+"]", LogTarget_Message)
+		logger.Debug("DealMessage["+fmt.Sprintln(task)+"]: SendMessage End [ClientCount="+strconv.Itoa(count)+"] [ToApp] ["+fmt.Sprintln(msg)+"]", LogTarget_Message)
 		//删除标记需要删除的Client
 		return
 	}
@@ -153,9 +153,9 @@ func task_DealMessage(task *task.TaskInfo) {
 
 	//发送给用户组
 	if msg.ToUserID == "" && msg.ToUserList == nil {
-		logger.Debug("DealMessage["+fmt.Sprintln(task)+"]: Begin SendMessage [ToGroup] ["+fmt.Sprintln(msg)+"]", LogTarget_Message)
+		logger.Debug("DealMessage["+fmt.Sprintln(task)+"]: SendMessage Begin [ToGroup] ["+fmt.Sprintln(msg)+"]", LogTarget_Message)
 		count := group.SendMessage(msg)
-		logger.Debug("DealMessage["+fmt.Sprintln(task)+"]: End SendMessage [ClientCount="+strconv.Itoa(count)+"] [ToGroup] ["+fmt.Sprintln(msg)+"]", LogTarget_Message)
+		logger.Debug("DealMessage["+fmt.Sprintln(task)+"]: SendMessage End [ClientCount="+strconv.Itoa(count)+"] [ToGroup] ["+fmt.Sprintln(msg)+"]", LogTarget_Message)
 		return
 	}
 
