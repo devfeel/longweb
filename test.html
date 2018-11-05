@@ -27,11 +27,11 @@ function initWebSocket(isauth) {
 
     if (isauth){
         //ws = new WebSocket('ws://192.168.8.178:8100/ws/onsocket?appid=10000&groupid=1&userid=' + newGuid());
-        ws = new WebSocket('ws://192.168.8.178:8100/ws/onauthsocket?appid=10000&groupid=1&userid=' + newGuid() + "&token=1");
+        ws = new WebSocket('ws://127.0.0.1:8100/ws/onauthsocket?appid=10000&groupid=1&userid=' + newGuid() + "&token=1");
     }
     else{
         //ws = new WebSocket('ws://192.168.8.178:8100/ws/onsocket?appid=10000&groupid=1&userid=' + newGuid());
-    ws = new WebSocket('ws://192.168.8.178:8100/ws/onsocket?appid=10000&groupid=1&userid=' + newGuid());
+    ws = new WebSocket('ws://127.0.0.1:8100/ws/onsocket?appid=10000&groupid=1&userid=' + newGuid());
     //ws = new WebSocket('wss://192.168.8.178:8100/ws/onsocket?appid=10000&groupid=1&userid=' + newGuid());
     }
 	

@@ -106,6 +106,8 @@ func (app *AppGroups) GetGroupCount() int {
 //get app's total client count
 func (app *AppGroups) GetState_TotalClientCount(groupIds ...string) int {
 	total := 0
+	app.mutex.RLock()
+	defer app.mutex.RUnlock()
 	for _, g := range app.groups {
 		if len(groupIds) > 0 && !slices.Exists(groupIds, g.groupId) {
 			continue
@@ -118,6 +120,8 @@ func (app *AppGroups) GetState_TotalClientCount(groupIds ...string) int {
 //get app's websocke client count
 func (app *AppGroups) GetState_WebSocketCount(groupIds ...string) int {
 	total := 0
+	app.mutex.RLock()
+	defer app.mutex.RUnlock()
 	for _, g := range app.groups {
 		if len(groupIds) > 0 && !slices.Exists(groupIds, g.groupId) {
 			continue
@@ -130,6 +134,8 @@ func (app *AppGroups) GetState_WebSocketCount(groupIds ...string) int {
 //get app's auth websocke client count
 func (app *AppGroups) GetState_AuthWebSocketCount(groupIds ...string) int {
 	total := 0
+	app.mutex.RLock()
+	defer app.mutex.RUnlock()
 	for _, g := range app.groups {
 		if len(groupIds) > 0 && !slices.Exists(groupIds, g.groupId) {
 			continue
@@ -142,6 +148,8 @@ func (app *AppGroups) GetState_AuthWebSocketCount(groupIds ...string) int {
 //get app's longpoll client count
 func (app *AppGroups) GetState_LongPollCount(groupIds ...string) int {
 	total := 0
+	app.mutex.RLock()
+	defer app.mutex.RUnlock()
 	for _, g := range app.groups {
 		if len(groupIds) > 0 && !slices.Exists(groupIds, g.groupId) {
 			continue
@@ -154,6 +162,8 @@ func (app *AppGroups) GetState_LongPollCount(groupIds ...string) int {
 //get app's auth longpoll client count
 func (app *AppGroups) GetState_AuthLongPollCount(groupIds ...string) int {
 	total := 0
+	app.mutex.RLock()
+	defer app.mutex.RUnlock()
 	for _, g := range app.groups {
 		if len(groupIds) > 0 && !slices.Exists(groupIds, g.groupId) {
 			continue
@@ -180,9 +190,9 @@ func (ag *AppGroups) GetState_UserGroups() map[string]*UserGroup {
 //online groupid do nothing
 //return send client count
 func (ag *AppGroups) SendMessage(message *Message) int {
+	clientcount := 0
 	ag.mutex.RLock()
 	defer ag.mutex.RUnlock()
-	clientcount := 0
 	for _, group := range ag.groups {
 		if strings.ToLower(group.groupId) != GroupID_Online {
 			clientcount += group.SendMessage(message)
@@ -310,6 +320,8 @@ func (ug *UserGroup) GetState_WebSocketClientCount() int {
 //get usergroup's auth websocketclient count
 func (ug *UserGroup) GetState_AuthWebSocketClientCount() int {
 	count := 0
+	ug.userMutex.RLock()
+	defer ug.userMutex.RUnlock()
 	for _, client := range ug.websocketClients {
 		if client.IsAuth {
 			count += 1
@@ -326,6 +338,8 @@ func (ug *UserGroup) GetState_LongPollClientCount() int {
 //get usergroup's auth longpollclient count
 func (ug *UserGroup) GetState_AuthLongPollClientCount() int {
 	count := 0
+	ug.userMutex.RLock()
+	defer ug.userMutex.RUnlock()
 	for _, client := range ug.longpollClients {
 		if client.IsAuth {
 			count += 1
